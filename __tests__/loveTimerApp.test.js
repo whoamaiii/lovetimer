@@ -89,3 +89,49 @@ describe('LoveTimerApp utility methods', () => {
     });
   });
 });
+
+describe('event listener cleanup', () => {
+  let originalMatchMedia;
+
+  beforeEach(() => {
+    originalMatchMedia = window.matchMedia;
+  });
+
+  afterEach(() => {
+    window.matchMedia = originalMatchMedia;
+  });
+
+  test('removes matchMedia listeners on cleanup', () => {
+    const darkQuery = {
+      addEventListener: jest.fn(),
+      removeEventListener: jest.fn(),
+      matches: false
+    };
+    const motionQuery = {
+      addEventListener: jest.fn(),
+      removeEventListener: jest.fn(),
+      matches: false
+    };
+
+    window.matchMedia = jest.fn((q) =>
+      q.includes('color-scheme') ? darkQuery : motionQuery
+    );
+
+    const app = new LoveTimerApp();
+    app.setupEventListeners();
+
+    expect(darkQuery.addEventListener).toHaveBeenCalledTimes(1);
+    expect(motionQuery.addEventListener).toHaveBeenCalledTimes(1);
+
+    app.cleanup();
+
+    expect(darkQuery.removeEventListener).toHaveBeenCalledWith(
+      'change',
+      app.handleDarkModeChange
+    );
+    expect(motionQuery.removeEventListener).toHaveBeenCalledWith(
+      'change',
+      app.handleReducedMotionChange
+    );
+  });
+});
