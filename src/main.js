@@ -3,6 +3,7 @@
 
 import './style.css';
 import confetti from 'canvas-confetti';
+// Astronomical features have been removed
 import {
   START_DATE,
   getMessages,
