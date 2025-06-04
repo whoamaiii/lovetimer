@@ -9,7 +9,7 @@
     "build": "vite build",
     "preview": "vite preview --port 3000 --host",
     "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
-    "lint": "eslint \"src/**/*.{js,jsx,ts,tsx}\"",
+    "lint": "eslint -c .eslintrc.cjs \"src/**/*.{js,jsx,ts,tsx}\"",
     "format": "prettier --write \"src/**/*.{js,css,html,json}\""
   },
   "dependencies": {
