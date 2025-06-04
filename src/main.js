@@ -23,7 +23,7 @@ import {
  * Handles all timer functionality with performance optimization and error handling
  */
 // @codex:component LoveTimerApp
-class LoveTimerApp {
+export class LoveTimerApp {
   constructor() {
     this.intervals = new Set();
     this.timeouts = new Set();
