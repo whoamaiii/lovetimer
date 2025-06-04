@@ -59,12 +59,8 @@ Access at: `http://localhost:3000`.
 The timer boots via **`initializeLoveTimer`** exported from `src/main.js`. This
 function constructs a `LoveTimerApp`, triggers its `init()` routine, and returns
 the created instance. It also runs automatically on `DOMContentLoaded`, placing
-the instance on `window.loveTimer` for debugging. The core logic is split across
-three supporting modules:
-
-- **`timer.js`** – keeps track of elapsed time and fires anniversary events.
-- **`theme.js`** – applies light or dark mode and remembers the user's choice.
-- **`ui.js`** – updates the DOM and wires up button clicks and keyboard input.
+the instance on `window.loveTimer` for debugging. All timer, theme, and UI logic
+now lives in this single file.
 
 ---
 
@@ -113,9 +109,6 @@ This project is configured for use with AI coding assistants like OpenAI Codex:
 
 ## Code Structure
 
-- **`src/main.js`**: Hosts `LoveTimerApp` and exports `initializeLoveTimer`, the helper that instantiates and starts the app.
-- **`src/timer.js`**: Provides the core timekeeping utilities and emits anniversary events.
-- **`src/theme.js`**: Controls theme selection and persists the user's preference.
-- **`src/ui.js`**: Handles DOM manipulation and user interactions.
+- **`src/main.js`**: Hosts `LoveTimerApp`, exporting `initializeLoveTimer`. All timer functionality, theme control, and DOM interactions are consolidated here.
 
 ---
