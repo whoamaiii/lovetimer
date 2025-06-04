@@ -22,7 +22,6 @@ import {
  * Main Love Timer Application Class
  * Handles all timer functionality with performance optimization and error handling
  */
-// @codex:component LoveTimerApp
 export class LoveTimerApp {
   constructor() {
     this.intervals = new Set();
@@ -581,7 +580,6 @@ export class LoveTimerApp {
   /**
    * Fire confetti celebration
    */
-  // @codex:utility triggerConfetti
   triggerConfetti() {
     if (!this.animationsEnabled) return;
 
