@@ -183,12 +183,14 @@ class LoveTimerApp {
     // Theme system preference changes
     if (window.matchMedia) {
       const darkModeQuery = window.matchMedia('(prefers-color-scheme: dark)');
-      darkModeQuery.addListener(() => this.updateTheme());
+      darkModeQuery.addEventListener('change', () => this.updateTheme());
 
       const reducedMotionQuery = window.matchMedia(
         '(prefers-reduced-motion: reduce)'
       );
-      reducedMotionQuery.addListener(() => this.updateAnimationPreference());
+      reducedMotionQuery.addEventListener('change', () =>
+        this.updateAnimationPreference()
+      );
     }
 
     // Control buttons
