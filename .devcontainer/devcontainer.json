@@ -1,0 +1,15 @@
+{
+  "name": "lovetimer-devcontainer",
+  "image": "mcr.microsoft.com/vscode/devcontainers/javascript-node:20",
+  "features": {
+    "github-cli": "latest"
+  },
+  "remoteUser": "vscode",
+  "postCreateCommand": "bash setup.sh",
+  "forwardPorts": [3000, 5173],
+  "workspaceFolder": "/workspaces/lovetimer",
+  "extensions": [
+    "esbenp.prettier-vscode",
+    "ms-vscode.vscode-typescript-tslint-plugin"
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "version": "2025-06-01",
+  "entrypoint": "npm run start",
+  "devEntrypoint": "npm run dev",
+  "testEntrypoint": "npm run test",
+  "env": {
+    "DATABASE_URL": "mongodb://localhost:27017/lovetimer"
+  },
+  "secrets": {
+    "OPENAI_API_KEY": "YOUR_OPENAI_API_KEY_HERE",
+    "JWT_SECRET": "YOUR_JWT_SECRET_HERE"
+  },
+  "portMapping": {
+    "3000": "http://localhost:3000",
+    "5173": "http://localhost:5173"
+  },
+  "setupScript": "bash setup.sh",
+  "instructions": {
+    "init": [
+      "echo 'Running initialization (npm install is handled by setup.sh)'"
+    ],
+    "run": [
+      "npm run start"
+    ],
+    "test": [
+      "npm run test"
+    ]
+  },
+  "internetAccess": "limited"
+}
