@@ -56,15 +56,11 @@ Access at: `http://localhost:3000`.
 
 ## Entry Point
 
-The timer boots via **`initializeLoveTimer`** exported from `src/main.js`. This
-function constructs a `LoveTimerApp`, triggers its `init()` routine, and returns
-the created instance. It also runs automatically on `DOMContentLoaded`, placing
-the instance on `window.loveTimer` for debugging. The core logic is split across
-three supporting modules:
-
-- **`timer.js`** – keeps track of elapsed time and fires anniversary events.
-- **`theme.js`** – applies light or dark mode and remembers the user's choice.
-- **`ui.js`** – updates the DOM and wires up button clicks and keyboard input.
+The global entry point for the application is **`initializeLoveTimer`** in
+`src/main.js`. This helper creates a `LoveTimerApp`, calls its `init()` method
+and exposes the instance on `window.loveTimer` after the DOM is ready. The core
+timer logic lives in **`timer.js`**, while **`theme.js`** and **`ui.js`** act as
+helper modules for theme handling and user-interface updates.
 
 ---
 
@@ -107,15 +103,13 @@ This project is configured for use with AI coding assistants like OpenAI Codex:
     -   `npm run test`: For running automated tests.
     -   `npm run lint`: For code linting.
 -   **Setup Script (`setup.sh`)**: Automates the installation of dependencies and generation of necessary configuration files (`tsconfig.json`, `.eslintrc.json`, etc.).
--   **Inline Code Tags (`@codex:`)**: Present in `src/main.js` to help agents identify key code sections.
-
 ---
 
 ## Code Structure
 
-- **`src/main.js`**: Hosts `LoveTimerApp` and exports `initializeLoveTimer`, the helper that instantiates and starts the app.
-- **`src/timer.js`**: Provides the core timekeeping utilities and emits anniversary events.
-- **`src/theme.js`**: Controls theme selection and persists the user's preference.
-- **`src/ui.js`**: Handles DOM manipulation and user interactions.
+- **`src/main.js`** – exports `initializeLoveTimer`, the global bootstrap that creates the app instance.
+- **`src/timer.js`** – houses the core timer logic.
+- **`src/theme.js`** – helper module for managing themes.
+- **`src/ui.js`** – helper module for DOM updates and interactions.
 
 ---
