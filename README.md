@@ -27,6 +27,7 @@ A simple Love Timer app to help users track time since a start date, built with 
     npm install
     ```
     If not using DevContainer/Codex setup, run `bash setup.sh` once to ensure all dev tools and configs are set up.
+    **You must complete this step before running `npm run test` or `npm run lint`.**
 
 3.  **Configure Environment (for Codex or local execution needing these):**
     The `codex.json` file defines `secrets` that Codex will use:
@@ -66,7 +67,8 @@ helper modules for theme handling and user-interface updates.
 
 ## Testing
 
--   Run all tests using Jest:
+-   Run all tests using Jest (after running `npm install` and `bash setup.sh` if
+    they haven't been executed automatically):
     ```bash
     npm run test
     ```
@@ -75,7 +77,8 @@ helper modules for theme handling and user-interface updates.
 
 ## Linting
 
--   Run ESLint to check for code quality issues:
+-   Run ESLint to check for code quality issues (make sure dependencies are
+    installed and `bash setup.sh` has been executed):
     ```bash
     npm run lint
     ```
