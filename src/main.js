@@ -182,13 +182,13 @@ export class LoveTimerApp {
     // Theme system preference changes
     if (window.matchMedia) {
       const darkModeQuery = window.matchMedia('(prefers-color-scheme: dark)');
-      darkModeQuery.addEventListener('change', () => this.updateTheme());
+      darkModeQuery.addEventListener('change', () => updateTheme(this));
 
       const reducedMotionQuery = window.matchMedia(
         '(prefers-reduced-motion: reduce)'
       );
       reducedMotionQuery.addEventListener('change', () =>
-        this.updateAnimationPreference()
+        updateAnimationPreference(this)
       );
     }
 
@@ -831,6 +831,18 @@ export class LoveTimerApp {
     window.removeEventListener('beforeunload', this.handleBeforeUnload);
 
     console.log('Love Timer cleaned up');
+  }
+}
+
+function updateTheme(app) {
+  if (app && typeof app.updateTheme === 'function') {
+    app.updateTheme();
+  }
+}
+
+function updateAnimationPreference(app) {
+  if (app && typeof app.updateAnimationPreference === 'function') {
+    app.updateAnimationPreference();
   }
 }
 
