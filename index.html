@@ -32,7 +32,6 @@
     <title>Our Love Timer 💕</title>
   </head>
   <body>
-    <canvas id="starSkyBg" style="position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:-1;pointer-events:none;" aria-hidden="true"></canvas>
     <!-- Skip link for keyboard navigation -->
     <a href="#main-content" class="skip-link">Skip to main content</a>
     
@@ -80,33 +79,6 @@
           aria-label="Anniversary start date"
         ></div>
       </footer>
-
-      <section aria-labelledby="astro-panel-heading" class="astro-panel-section">
-        <h2 id="astro-panel-heading" class="visually-hidden">Astronomical Information</h2>
-        <div class="astro-panel" id="astro-panel">
-          <div class="astro-info-group">
-            <div class="astro-info-item" id="moon-phase-container">
-              <span class="astro-label">Moon:</span>
-              <span id="moon-phase" aria-label="Current moon phase">Loading...</span>
-            </div>
-            <div class="astro-info-item" id="constellation-container">
-              <span class="astro-label">Stars:</span>
-              <span id="constellation" aria-label="Current visible constellation">Loading...</span>
-            </div>
-          </div>
-          <div class="astro-info-group">
-            <div class="astro-info-item" id="sun-times-container">
-              <span class="astro-label">Sun:</span>
-              <span id="sunrise-time" aria-label="Sunrise time">Sunrise: --:--</span>
-              <span id="sunset-time" aria-label="Sunset time">Sunset: --:--</span>
-            </div>
-            <div class="astro-info-item" id="location-container">
-              <span class="astro-label">Location:</span>
-              <span id="current-location" aria-label="Current location">Loading...</span>
-            </div>
-          </div>
-        </div>
-      </section>
       
       <!-- Decorative elements hidden from screen readers -->
       <div 
@@ -150,8 +122,6 @@
       <button id="retry-button" class="retry-button">Try Again</button>
     </div>
 
-    <!-- Load d3-celestial in non-strict mode before ES modules -->
-    <script src="/celestial.min.js"></script>
     <script type="module" src="src/main.js"></script>
   </body>
 </html>
