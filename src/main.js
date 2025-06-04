@@ -3,10 +3,7 @@
 
 import './style.css';
 import confetti from 'canvas-confetti';
-import { initStarMap } from './astro/starMap.js';
-import { calculateMoonPhase } from './astro/moonPhase.js';
-// Astronomical features
-// TODO: Remove/update astronomical panel placeholder code (handled by AstroService in Phase 4)
+// Astronomical features have been removed
 import {
   START_DATE,
   getMessages,
@@ -81,9 +78,6 @@ class LoveTimerApp {
       // Get localized messages
       this.messages = getMessages();
 
-      // Initialize Astronomical Features
-      this.initAstroFeatures();
-
       // Start the timer
       this.startTimer();
 
@@ -148,14 +142,7 @@ class LoveTimerApp {
       'loading-indicator',
       'error-container',
       'error-text',
-      'retry-button',
-      // Astro panel elements
-      'astro-panel',
-      'moon-phase',
-      'constellation',
-      'sunrise-time',
-      'sunset-time',
-      'current-location'
+      'retry-button'
     ];
 
     requiredElements.forEach((id) => {
@@ -819,63 +806,6 @@ class LoveTimerApp {
     }, delay);
     this.timeouts.add(timeout);
     return timeout;
-  }
-
-  /**
-   * Initialize Astronomical Features
-   */
-  async initAstroFeatures() {
-    try {
-      await initStarMap(START_DATE);
-
-      // Moon phase display
-      const moonPhase = calculateMoonPhase();
-      if (this.cachedElements['moon-phase']) {
-        this.cachedElements['moon-phase'].textContent = `${moonPhase.phaseEmoji} ${moonPhase.phaseName}`;
-      }
-
-      // Update constellation display with seasonal constellation
-      if (this.cachedElements['constellation']) {
-        const now = new Date();
-        const month = now.getMonth();
-        const seasonalConstellations = [
-          'Orion ⭐', 'Gemini ♊', 'Leo ♌', 'Virgo ♍',
-          'Boötes 🌟', 'Hercules 💪', 'Cygnus 🦢', 'Aquila 🦅',
-          'Pegasus 🐎', 'Andromeda 👸', 'Perseus ⚔️', 'Auriga 🚗'
-        ];
-        this.cachedElements['constellation'].textContent = seasonalConstellations[month];
-      }
-
-      // Update location display
-      if (this.cachedElements['current-location']) {
-        this.cachedElements['current-location'].textContent = 'Oslo, Norway';
-      }
-    } catch (error) {
-      console.error('Star map or moon phase failed to initialize:', error);
-      this.showAstroFallback();
-    }
-  }
-
-  /**
-   * Update the Astronomical Information Panel
-   */
-  async updateAstroPanel() {
-    // TODO: Implement astronomical panel update using AstroService
-  }
-
-  /**
-   * Show fallback content when astro features fail to load
-   */
-  showAstroFallback() {
-    if (this.cachedElements['moon-phase']) {
-      this.cachedElements['moon-phase'].textContent = '🌙 Moon';
-    }
-    if (this.cachedElements['constellation']) {
-      this.cachedElements['constellation'].textContent = '⭐ Stars';
-    }
-    if (this.cachedElements['current-location']) {
-      this.cachedElements['current-location'].textContent = 'Location';
-    }
   }
 
   /**

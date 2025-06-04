@@ -13,8 +13,7 @@
     "format": "prettier --write \"src/**/*.{js,css,html,json}\""
   },
   "dependencies": {
-    "canvas-confetti": "^1.9.3",
-    "d3-celestial": "^0.7.15"
+    "canvas-confetti": "^1.9.3"
   },
   "devDependencies": {
     "eslint": "^8.49.0",
