@@ -96,3 +96,12 @@ This project is configured for use with AI coding assistants like OpenAI Codex:
 -   **Inline Code Tags (`@codex:`)**: Present in `src/main.js` to help agents identify key code sections.
 
 ---
+
+## Code Structure
+
+- **`src/main.js`**: Exports `initializeLoveTimer`, a bootstrapping function that instantiates the timer and attaches it to `window.loveTimer` for easy debugging and extension.
+- **`src/timer.js`**: Contains the core timer logic that tracks elapsed time and triggers anniversary celebrations.
+- **`src/theme.js`**: Manages light/dark/auto themes and persists the user's selection.
+- **`src/ui.js`**: Handles DOM updates and user interactions, keeping rendering concerns separate from timer logic.
+
+---
