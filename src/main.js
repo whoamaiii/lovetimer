@@ -39,6 +39,12 @@ export class LoveTimerApp {
     this.dateFormatter = null;
     this.messages = [];
 
+    // MatchMedia queries and handlers
+    this.darkModeQuery = null;
+    this.reducedMotionQuery = null;
+    this.handleDarkModeChange = null;
+    this.handleReducedMotionChange = null;
+
     // Bind methods to preserve context
     this.handleVisibilityChange = this.handleVisibilityChange.bind(this);
     this.handleKeydown = this.handleKeydown.bind(this);
@@ -181,14 +187,17 @@ export class LoveTimerApp {
 
     // Theme system preference changes
     if (window.matchMedia) {
-      const darkModeQuery = window.matchMedia('(prefers-color-scheme: dark)');
-      darkModeQuery.addEventListener('change', () => updateTheme(this));
+      this.darkModeQuery = window.matchMedia('(prefers-color-scheme: dark)');
+      this.handleDarkModeChange = () => updateTheme(this);
+      this.darkModeQuery.addEventListener('change', this.handleDarkModeChange);
 
-      const reducedMotionQuery = window.matchMedia(
+      this.reducedMotionQuery = window.matchMedia(
         '(prefers-reduced-motion: reduce)'
       );
-      reducedMotionQuery.addEventListener('change', () =>
-        updateAnimationPreference(this)
+      this.handleReducedMotionChange = () => updateAnimationPreference(this);
+      this.reducedMotionQuery.addEventListener(
+        'change',
+        this.handleReducedMotionChange
       );
     }
 
@@ -829,6 +838,20 @@ export class LoveTimerApp {
     );
     document.removeEventListener('keydown', this.handleKeydown);
     window.removeEventListener('beforeunload', this.handleBeforeUnload);
+
+    if (this.darkModeQuery && this.handleDarkModeChange) {
+      this.darkModeQuery.removeEventListener(
+        'change',
+        this.handleDarkModeChange
+      );
+    }
+
+    if (this.reducedMotionQuery && this.handleReducedMotionChange) {
+      this.reducedMotionQuery.removeEventListener(
+        'change',
+        this.handleReducedMotionChange
+      );
+    }
 
     console.log('Love Timer cleaned up');
   }
