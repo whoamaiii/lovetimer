@@ -50,7 +50,20 @@ A simple Love Timer app to help users track time since a start date, built with 
     npm run start
     ```
     This runs `bin/launch.sh`, which builds the app and then serves it.
-    Access at: `http://localhost:3000`.
+Access at: `http://localhost:3000`.
+
+---
+
+## Entry Point
+
+The timer boots via **`initializeLoveTimer`** exported from `src/main.js`. This
+function creates the `LoveTimerApp`, starts the countdown and attaches the
+instance to `window.loveTimer` for easier debugging in the browser console. The
+core functionality is split across three supporting modules:
+
+- **`timer.js`** – tracks elapsed time and triggers anniversary events.
+- **`theme.js`** – manages light/dark theme preferences and persistence.
+- **`ui.js`** – handles DOM updates and user interactions.
 
 ---
 
@@ -99,9 +112,9 @@ This project is configured for use with AI coding assistants like OpenAI Codex:
 
 ## Code Structure
 
-- **`src/main.js`**: Exports `initializeLoveTimer`, a bootstrapping function that instantiates the timer and attaches it to `window.loveTimer` for easy debugging and extension.
-- **`src/timer.js`**: Contains the core timer logic that tracks elapsed time and triggers anniversary celebrations.
-- **`src/theme.js`**: Manages light/dark/auto themes and persists the user's selection.
-- **`src/ui.js`**: Handles DOM updates and user interactions, keeping rendering concerns separate from timer logic.
+- **`src/main.js`**: Contains `initializeLoveTimer` and the `LoveTimerApp` class used to bootstrap the app.
+- **`src/timer.js`**: Implements the core timekeeping logic and anniversary triggers.
+- **`src/theme.js`**: Manages theme selection and persistence.
+- **`src/ui.js`**: Updates the DOM and processes user input.
 
 ---
