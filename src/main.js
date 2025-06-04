@@ -836,16 +836,22 @@ export class LoveTimerApp {
   }
 }
 
+// Initialize the application and expose the instance
+export function initializeLoveTimer() {
+  const timer = new LoveTimerApp();
+  timer.init();
+
+  if (typeof window !== 'undefined') {
+    window.loveTimer = timer;
+  }
+
+  return timer;
+}
+
 // Initialize the application when DOM is ready
 document.addEventListener('DOMContentLoaded', () => {
   try {
-    const timer = new LoveTimerApp();
-    timer.init();
-
-    // Make timer globally available for debugging
-    if (typeof window !== 'undefined') {
-      window.loveTimer = timer;
-    }
+    initializeLoveTimer();
   } catch (error) {
     console.error('Failed to initialize Love Timer:', error);
 
