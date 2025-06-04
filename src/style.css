@@ -1,0 +1,568 @@
+/* === CSS Custom Properties for Theming === */
+:root {
+  /* Light theme colors */
+  --bg-gradient-start: #667eea;
+  --bg-gradient-middle: #764ba2;
+  --bg-gradient-end: #f093fb;
+  --text-primary: #ffffff;
+  --text-secondary: rgba(255, 255, 255, 0.85);
+  --text-shadow: rgba(0, 0, 0, 0.2);
+  --control-bg: rgba(255, 255, 255, 0.1);
+  --control-border: rgba(255, 255, 255, 0.2);
+  --error-bg: #dc3545;
+  --loading-bg: rgba(0, 0, 0, 0.8);
+
+  /* Spacing */
+  --spacing-xs: 0.25rem;
+  --spacing-sm: 0.5rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 2rem;
+  --spacing-xl: 3rem;
+
+  /* Typography */
+  --font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  --font-size-small: clamp(0.75rem, 1vw + 0.5rem, 1rem);
+  --font-size-base: clamp(1rem, 1.5vw + 0.5rem, 1.25rem);
+  --font-size-large: clamp(1.25rem, 2vw + 0.5rem, 1.5rem);
+  --font-size-xl: clamp(1.5rem, 2.5vw + 0.75rem, 2rem);
+  --font-size-2xl: clamp(2rem, 3vw + 1rem, 2.5rem);
+  --font-size-3xl: clamp(3rem, 4vw + 1rem, 4rem);
+  --font-size-4xl: clamp(4rem, 5vw + 1rem, 5rem);
+
+  /* Animations */
+  --animation-duration-fast: 0.15s;
+  --animation-duration-normal: 0.3s;
+  --animation-duration-slow: 0.5s;
+  --animation-easing: ease-out;
+
+  /* Z-index scale */
+  --z-index-hearts: 1;
+  --z-index-controls: 10;
+  --z-index-loading: 100;
+  --z-index-error: 1000;
+  --z-index-skip-link: 9999;
+}
+
+/* === Dark Theme === */
+[data-theme='dark'] {
+  --bg-gradient-start: #1a1a2e;
+  --bg-gradient-middle: #16213e;
+  --bg-gradient-end: #0f3460;
+  --text-primary: #ffffff;
+  --text-secondary: rgba(255, 255, 255, 0.9);
+  --control-bg: rgba(0, 0, 0, 0.3);
+  --control-border: rgba(255, 255, 255, 0.3);
+}
+
+/* === Dark mode preference === */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) {
+    --bg-gradient-start: #1a1a2e;
+    --bg-gradient-middle: #16213e;
+    --bg-gradient-end: #0f3460;
+    --text-primary: #ffffff;
+    --text-secondary: rgba(255, 255, 255, 0.9);
+    --control-bg: rgba(0, 0, 0, 0.3);
+    --control-border: rgba(255, 255, 255, 0.3);
+  }
+}
+
+/* === High contrast mode === */
+@media (prefers-contrast: high) {
+  :root {
+    --bg-gradient-start: #000000;
+    --bg-gradient-middle: #000000;
+    --bg-gradient-end: #000000;
+    --text-primary: #ffffff;
+    --text-secondary: #ffffff;
+    --text-shadow: none;
+    --control-bg: #ffffff;
+    --control-border: #ffffff;
+  }
+
+  .title,
+  .timer,
+  .message,
+  .date {
+    text-shadow: none !important;
+    color: var(--text-primary) !important;
+  }
+}
+
+/* === Reduced motion preferences === */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .heart {
+    display: none !important;
+  }
+
+  .loading-spinner {
+    animation: none !important;
+  }
+}
+
+/* === Base Reset === */
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* === Focus Management === */
+:focus {
+  outline: none;
+}
+
+:focus-visible {
+  outline: 2px solid var(--text-primary);
+  outline-offset: 2px;
+  border-radius: 4px;
+  box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.3);
+}
+
+/* === Skip Link === */
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 6px;
+  background: var(--text-primary);
+  color: var(--bg-gradient-start);
+  padding: var(--spacing-sm) var(--spacing-md);
+  text-decoration: none;
+  border-radius: 4px;
+  z-index: var(--z-index-skip-link);
+  font-weight: 600;
+  transition: top var(--animation-duration-normal) var(--animation-easing);
+}
+
+.skip-link:focus {
+  top: 6px;
+}
+
+/* === Body and Main Layout === */
+body {
+  font-family: var(--font-family);
+  background: linear-gradient(
+    135deg,
+    var(--bg-gradient-start) 0%,
+    var(--bg-gradient-middle) 50%,
+    var(--bg-gradient-end) 100%
+  );
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  overflow-x: hidden;
+  color: var(--text-primary);
+  line-height: 1.6;
+}
+
+/* === Visually Hidden Class === */
+.visually-hidden {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
+/* === Main Container === */
+.container {
+  text-align: center;
+  padding: var(--spacing-lg);
+  max-width: 800px;
+  width: 100%;
+  animation: fadeIn var(--animation-duration-slow) var(--animation-easing);
+}
+
+/* === Typography === */
+.title {
+  font-size: var(--font-size-3xl);
+  margin-bottom: var(--spacing-lg);
+  text-shadow: 2px 2px 4px var(--text-shadow);
+  animation: fadeIn var(--animation-duration-slow) var(--animation-easing) 0.2s
+    both;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.timer {
+  font-size: var(--font-size-4xl);
+  font-weight: 800;
+  margin-bottom: var(--spacing-md);
+  text-shadow: 3px 3px 6px var(--text-shadow);
+  animation: fadeIn var(--animation-duration-slow) var(--animation-easing) 0.4s
+    both;
+  letter-spacing: -0.01em;
+  word-break: break-all;
+  hyphens: auto;
+}
+
+/* === Astronomical Panel === */
+.astro-panel-section {
+  margin-top: var(--spacing-lg);
+  animation: fadeIn var(--animation-duration-slow) var(--animation-easing) 1s
+    both;
+}
+
+.astro-panel {
+  background: var(--control-bg);
+  border: 1px solid var(--control-border);
+  border-radius: 12px;
+  padding: var(--spacing-md);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  text-align: left;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.astro-info-group {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--spacing-md);
+}
+
+.astro-info-item {
+  flex: 1;
+  min-width: 0; /* Prevents overflow issues with flex items */
+}
+
+.astro-label {
+  font-weight: 600;
+  opacity: 0.8;
+  font-size: var(--font-size-small);
+  display: block;
+  margin-bottom: var(--spacing-xs);
+}
+
+#moon-phase,
+#constellation,
+#sunrise-time,
+#sunset-time,
+#current-location {
+  font-size: var(--font-size-base);
+  font-weight: 500;
+  display: block; /* Ensure each piece of info is on its own line if needed */
+  word-wrap: break-word; /* Prevent long text from breaking layout */
+}
+
+#sun-times-container span {
+  display: block; /* Stack sunrise and sunset times */
+}
+
+.days-until {
+  font-size: var(--font-size-large);
+  font-weight: 500;
+  text-align: center;
+  margin-top: var(--spacing-sm);
+  margin-bottom: var(--spacing-lg);
+  opacity: 0.85;
+  text-shadow: 1px 1px 2px var(--text-shadow);
+  animation: fadeIn var(--animation-duration-slow) var(--animation-easing) 0.5s
+    both;
+}
+
+.message {
+  font-size: var(--font-size-xl);
+  margin-bottom: var(--spacing-lg);
+  opacity: 1;
+  transition: opacity var(--animation-duration-slow) ease-in-out;
+  text-shadow: 1px 1px 2px var(--text-shadow);
+  animation: fadeIn var(--animation-duration-slow) var(--animation-easing) 0.6s
+    both;
+  min-height: 2em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.date {
+  font-size: var(--font-size-large);
+  opacity: 0.8;
+  text-shadow: 1px 1px 2px var(--text-shadow);
+  animation: fadeIn var(--animation-duration-slow) var(--animation-easing) 0.8s
+    both;
+}
+
+/* === Hearts Animation === */
+.hearts-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: var(--z-index-hearts);
+}
+
+.heart {
+  position: absolute;
+  bottom: -50px;
+  animation: float var(--random-duration, 10s) linear forwards;
+  pointer-events: none;
+  will-change: transform, opacity;
+  left: var(--random-left, 50%);
+  font-size: calc(var(--random-scale, 1) * 1rem);
+  user-select: none;
+  backface-visibility: hidden;
+  transform: translateZ(0);
+}
+
+/* === Animations === */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes float {
+  0% {
+    transform: translateY(0) rotate(0deg);
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.8;
+  }
+  100% {
+    transform: translateY(-100vh) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* === Accessibility Controls === */
+.accessibility-controls {
+  position: fixed;
+  top: var(--spacing-md);
+  right: var(--spacing-md);
+  display: flex;
+  gap: var(--spacing-sm);
+  z-index: var(--z-index-controls);
+}
+
+.control-button {
+  background: var(--control-bg);
+  border: 1px solid var(--control-border);
+  color: var(--text-primary);
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: var(--font-size-small);
+  font-weight: 500;
+  transition: all var(--animation-duration-normal) var(--animation-easing);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.control-button:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateY(-1px);
+}
+
+.control-button:active {
+  transform: translateY(0);
+}
+
+/* === Loading Indicator === */
+.loading {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: var(--loading-bg);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: var(--z-index-loading);
+  color: var(--text-primary);
+  gap: var(--spacing-md);
+}
+
+.loading.hidden {
+  display: none;
+}
+
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  border-top: 3px solid var(--text-primary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+/* === Error Handling === */
+.error-message {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: var(--error-bg);
+  color: var(--text-primary);
+  padding: var(--spacing-lg);
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  text-align: center;
+  max-width: 400px;
+  width: 90%;
+  z-index: var(--z-index-error);
+}
+
+.error-message h2 {
+  margin-bottom: var(--spacing-md);
+  font-size: var(--font-size-xl);
+}
+
+.retry-button {
+  background: var(--text-primary);
+  color: var(--error-bg);
+  border: none;
+  padding: var(--spacing-sm) var(--spacing-lg);
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  margin-top: var(--spacing-md);
+  transition: opacity var(--animation-duration-normal) var(--animation-easing);
+}
+
+.retry-button:hover {
+  opacity: 0.9;
+}
+
+/* === Responsive Design === */
+@media (max-width: 768px) {
+  .accessibility-controls {
+    top: var(--spacing-sm);
+    right: var(--spacing-sm);
+  }
+
+  .control-button {
+    padding: var(--spacing-xs) var(--spacing-sm);
+    font-size: 0.75rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    padding: var(--spacing-md);
+  }
+
+  .title {
+    margin-bottom: var(--spacing-md);
+  }
+
+  .timer {
+    line-height: 1.2;
+  }
+
+  .accessibility-controls {
+    flex-direction: column;
+    gap: var(--spacing-xs);
+  }
+
+  .astro-info-group {
+    flex-direction: column;
+    gap: var(--spacing-sm);
+  }
+
+  .astro-panel {
+    padding: var(--spacing-sm);
+  }
+}
+
+/* === Container Queries (Future Enhancement) === */
+
+/* === Print Styles === */
+@media print {
+  .hearts-container,
+  .accessibility-controls,
+  .loading,
+  .error-message {
+    display: none !important;
+  }
+
+  body {
+    background: white !important;
+    color: black !important;
+  }
+
+  .title,
+  .timer,
+  .message,
+  .date {
+    color: black !important;
+    text-shadow: none !important;
+  }
+}
+
+/* === Animation States === */
+[data-animations='disabled'] .heart {
+  display: none !important;
+}
+
+[data-animations='disabled'] .loading-spinner {
+  animation: none !important;
+}
+
+/* === RTL Support === */
+[dir='rtl'] .accessibility-controls {
+  left: var(--spacing-md);
+  right: auto;
+}
+
+[dir='rtl'] .skip-link {
+  left: auto;
+  right: 6px;
+}
+
+/* === Reduced Motion Alternative Animations === */
+@media (prefers-reduced-motion: reduce) {
+  @keyframes fadeInReduced {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  .container,
+  .title,
+  .timer,
+  .days-until,
+  .message,
+  .date {
+    animation: fadeInReduced 0.1s ease-out !important;
+  }
+}

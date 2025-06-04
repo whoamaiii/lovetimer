@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en" dir="auto">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="A romantic love timer counting precious moments together since our anniversary" />
+    <meta name="author" content="Love Timer App" />
+    <meta name="keywords" content="love, timer, anniversary, relationship, romance" />
+    
+    <!-- Open Graph / Social Media -->
+    <meta property="og:title" content="Our Love Timer 💕" />
+    <meta property="og:description" content="Counting every precious second of our love story" />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="timer-preview.png" />
+    
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Our Love Timer 💕" />
+    <meta name="twitter:description" content="Counting every precious second of our love story" />
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="heart-icon.svg" />
+    <link rel="apple-touch-icon" href="apple-touch-icon.png" />
+    
+    <!-- Preload critical resources -->
+    <link rel="preload" href="src/style.css" as="style" />
+    <link rel="preload" href="src/main.js" as="script" crossorigin="anonymous" />
+    
+    <!-- Link to stylesheet -->
+    <link rel="stylesheet" href="src/style.css" />
+    
+    <title>Our Love Timer 💕</title>
+  </head>
+  <body>
+    <canvas id="starSkyBg" style="position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:-1;pointer-events:none;" aria-hidden="true"></canvas>
+    <!-- Skip link for keyboard navigation -->
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+    
+    <main id="main-content" class="container" role="main">
+      <header>
+        <h1 class="title" id="page-title">Every Second Counts</h1>
+      </header>
+      
+      <section aria-labelledby="timer-section-heading" class="timer-section">
+        <h2 id="timer-section-heading" class="visually-hidden">Love Timer Display</h2>
+        <div 
+          class="timer" 
+          id="timer" 
+          aria-live="polite" 
+          aria-label="Number of seconds elapsed since our anniversary"
+          role="timer"
+        >
+          Loading...
+        </div>
+        <p 
+          id="daysRemaining" 
+          class="days-until" 
+          aria-live="polite"
+          aria-label="Days remaining until next anniversary"
+        ></p>
+      </section>
+      
+      <section aria-labelledby="message-section-heading" class="message-section">
+        <h2 id="message-section-heading" class="visually-hidden">Romantic Messages</h2>
+        <div 
+          class="message" 
+          id="message" 
+          role="status" 
+          aria-live="polite"
+          aria-label="Rotating romantic message"
+        >
+          Our love grows stronger with each passing moment
+        </div>
+      </section>
+      
+      <footer role="contentinfo">
+        <div 
+          class="date" 
+          id="date"
+          aria-label="Anniversary start date"
+        ></div>
+      </footer>
+
+      <section aria-labelledby="astro-panel-heading" class="astro-panel-section">
+        <h2 id="astro-panel-heading" class="visually-hidden">Astronomical Information</h2>
+        <div class="astro-panel" id="astro-panel">
+          <div class="astro-info-group">
+            <div class="astro-info-item" id="moon-phase-container">
+              <span class="astro-label">Moon:</span>
+              <span id="moon-phase" aria-label="Current moon phase">Loading...</span>
+            </div>
+            <div class="astro-info-item" id="constellation-container">
+              <span class="astro-label">Stars:</span>
+              <span id="constellation" aria-label="Current visible constellation">Loading...</span>
+            </div>
+          </div>
+          <div class="astro-info-group">
+            <div class="astro-info-item" id="sun-times-container">
+              <span class="astro-label">Sun:</span>
+              <span id="sunrise-time" aria-label="Sunrise time">Sunrise: --:--</span>
+              <span id="sunset-time" aria-label="Sunset time">Sunset: --:--</span>
+            </div>
+            <div class="astro-info-item" id="location-container">
+              <span class="astro-label">Location:</span>
+              <span id="current-location" aria-label="Current location">Loading...</span>
+            </div>
+          </div>
+        </div>
+      </section>
+      
+      <!-- Decorative elements hidden from screen readers -->
+      <div 
+        class="hearts-container" 
+        id="hearts-container" 
+        aria-hidden="true"
+        role="presentation"
+      ></div>
+    </main>
+
+    <!-- Controls for accessibility -->
+    <div class="accessibility-controls" role="region" aria-label="Animation controls">
+      <button 
+        id="toggle-animations" 
+        class="control-button"
+        aria-label="Toggle heart animations on or off"
+        title="Toggle animations"
+      >
+        <span id="animation-status">Pause animations</span>
+      </button>
+      <button 
+        id="toggle-theme" 
+        class="control-button"
+        aria-label="Toggle between light and dark theme"
+        title="Toggle theme"
+      >
+        <span id="theme-status">Dark mode</span>
+      </button>
+    </div>
+
+    <!-- Loading indicator for better UX -->
+    <div id="loading-indicator" class="loading" aria-hidden="true">
+      <div class="loading-spinner"></div>
+      <span>Loading love timer...</span>
+    </div>
+
+    <!-- Error message container -->
+    <div id="error-container" class="error-message" role="alert" aria-live="assertive" style="display: none;">
+      <h2>Error</h2>
+      <p id="error-text"></p>
+      <button id="retry-button" class="retry-button">Try Again</button>
+    </div>
+
+    <!-- Load d3-celestial in non-strict mode before ES modules -->
+    <script src="/celestial.min.js"></script>
+    <script type="module" src="src/main.js"></script>
+  </body>
+</html>
