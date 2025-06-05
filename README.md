@@ -50,7 +50,7 @@ A simple Love Timer app to help users track time since a start date, built with 
     npm run start
     ```
     This runs `bin/launch.sh`, which builds the app and then serves it.
-Access at: `http://localhost:3000`.
+    Access at: `http://localhost:3000`.
 
 ---
 
