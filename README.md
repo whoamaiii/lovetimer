@@ -29,8 +29,8 @@ see [docs/IPHONE_APP.md](docs/IPHONE_APP.md).
   card bursts a handful of hearts.
 - **Anniversary countdown** — days remaining until the next anniversary,
   with a confetti celebration on the day itself.
-- **Million-second milestones** — confetti and a special message every
-  million seconds.
+- **Million-second milestones** — confetti and a special message each time
+  another million seconds pass.
 - **Rotating romantic messages** — localized in 8 languages.
 - **Light / dark / auto themes** — follows the system by default, with the
   choice persisted.
