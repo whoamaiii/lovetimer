@@ -5,7 +5,9 @@ with a **Liquid Glass** interface inspired by the latest iOS design language:
 translucent, refractive panels with specular highlights and a slowly
 travelling spectral "diffraction" edge, floating over an ambient light scene.
 
-Built with Vite and vanilla JavaScript — no framework required.
+Built with Vite and vanilla JavaScript — no framework required. It also ships
+as a **native iPhone app** (via Capacitor) that you can sideload privately —
+see [docs/IPHONE_APP.md](docs/IPHONE_APP.md).
 
 ---
 
@@ -76,6 +78,22 @@ Built with Vite and vanilla JavaScript — no framework required.
   ```
 
   Access at: `http://localhost:3000`.
+
+---
+
+## iPhone App
+
+The repository contains a complete native iOS project in `ios/`, generated
+with [Capacitor](https://capacitorjs.com). To build and install it on your
+own iPhone (no App Store, no paid developer account needed):
+
+```bash
+npm run ios:sync   # build the web app and copy it into ios/
+npm run ios:open   # open the Xcode project (macOS)
+```
+
+Full step-by-step sideloading instructions — including a no-Mac path using
+GitHub Actions + AltStore — are in [docs/IPHONE_APP.md](docs/IPHONE_APP.md).
 
 ---
 

@@ -14,6 +14,10 @@ This is a Vite-based application, primarily focused on timer functionality. It i
     -   `setupTests.js`: Jest setup file.
 -   `__tests__/`: Contains Jest test files (e.g., `example.test.js`).
 -   `bin/launch.sh`: Script to build and run the application in a production-like mode.
+-   `bin/render-app-art.mjs`: Renders the iOS app icon/splash PNGs from the SVG sources in `assets/`.
+-   `ios/`: Native iOS (Capacitor) Xcode project for the sideloadable iPhone app. See `docs/IPHONE_APP.md`.
+-   `capacitor.config.json`: Capacitor configuration (app id, name, webDir, iOS settings).
+-   `assets/`: SVG sources for the app icon and launch screens (`npm run ios:assets` regenerates everything).
 -   `public/`: Static assets.
 -   `index.html`: The main HTML file.
 -   `package.json`: Defines scripts, dependencies, and project metadata.
