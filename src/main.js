@@ -820,6 +820,10 @@ export class LoveTimerApp {
       );
       input.value = local.toISOString().slice(0, 10);
       input.max = new Date().toISOString().slice(0, 10);
+
+      const earliest = new Date();
+      earliest.setFullYear(earliest.getFullYear() - 100);
+      input.min = earliest.toISOString().slice(0, 10);
     }
 
     sheet.hidden = false;
