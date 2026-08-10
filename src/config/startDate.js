@@ -53,7 +53,13 @@ export const START_DATE_STORAGE_KEY = 'love-timer-start-date';
  */
 function readStoredStartDate() {
   try {
-    return localStorage.getItem(START_DATE_STORAGE_KEY);
+    const stored = localStorage.getItem(START_DATE_STORAGE_KEY);
+    // Parse YYYY-MM-DD as local midnight instead of UTC so the
+    // anniversary falls on the day the user actually picked
+    if (stored && /^\d{4}-\d{2}-\d{2}$/.test(stored)) {
+      return `${stored}T00:00:00`;
+    }
+    return stored;
   } catch {
     return null;
   }
