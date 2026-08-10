@@ -88,6 +88,57 @@ describe('LoveTimerApp utility methods', () => {
       expect(status.textContent).toBe(getUIText('darkMode'));
     });
   });
+
+  describe('checkMilestone', () => {
+    const MILLION = 1_000_000;
+
+    function appWithSpy() {
+      const app = new LoveTimerApp();
+      app.triggerMilestoneConfetti = jest.fn();
+      return app;
+    }
+
+    test('does not celebrate on the first observation', () => {
+      const app = appWithSpy();
+
+      app.checkMilestone(3 * MILLION + 12);
+
+      expect(app.triggerMilestoneConfetti).not.toHaveBeenCalled();
+      expect(app.lastMilestone).toBe(3);
+    });
+
+    test('celebrates a crossing even when no tick lands on the exact second', () => {
+      const app = appWithSpy();
+
+      app.checkMilestone(MILLION - 1); // baseline, milestone 0
+      app.checkMilestone(MILLION + 3); // crossed without hitting it exactly
+
+      expect(app.triggerMilestoneConfetti).toHaveBeenCalledWith(1);
+      expect(app.lastMilestone).toBe(1);
+    });
+
+    test('celebrates each milestone only once', () => {
+      const app = appWithSpy();
+
+      app.checkMilestone(0);
+      app.checkMilestone(MILLION + 5);
+      app.checkMilestone(MILLION + 6);
+      app.checkMilestone(MILLION + 7);
+
+      expect(app.triggerMilestoneConfetti).toHaveBeenCalledTimes(1);
+    });
+
+    test('celebrates the next milestone after the previous one', () => {
+      const app = appWithSpy();
+
+      app.checkMilestone(0);
+      app.checkMilestone(MILLION + 5);
+      app.checkMilestone(2 * MILLION + 5);
+
+      expect(app.triggerMilestoneConfetti).toHaveBeenNthCalledWith(1, 1);
+      expect(app.triggerMilestoneConfetti).toHaveBeenNthCalledWith(2, 2);
+    });
+  });
 });
 
 describe('event listener cleanup', () => {

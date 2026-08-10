@@ -25,7 +25,8 @@ import {
   milestoneHaptic,
   hideSplashScreen,
   syncStatusBar,
-  scheduleLoveNotifications
+  scheduleLoveNotifications,
+  requestNotifications
 } from './native/nativeFeatures.js';
 
 /**
@@ -42,9 +43,11 @@ export class LoveTimerApp {
     this.cachedElements = {};
     this.currentMessageIndex = 0;
     this.anniversaryCelebrated = false;
-    this.lastMilestone = 0;
+    // null until the first timer tick establishes the current milestone
+    this.lastMilestone = null;
     this.heartCount = 0;
     this.isInitialized = false;
+    this.notificationsRequested = false;
     this.numberFormatter = null;
     this.dateFormatter = null;
     this.messages = [];
@@ -114,7 +117,7 @@ export class LoveTimerApp {
       this.hideLoading();
 
       // Native shell: fade out the launch screen now that the timer is
-      // rendered, and (re)schedule anniversary/milestone notifications
+      // rendered, and refresh the reminders if they were already allowed
       hideSplashScreen();
       scheduleLoveNotifications(START_DATE);
 
@@ -388,6 +391,12 @@ export class LoveTimerApp {
    * A small burst of hearts where the hero card is tapped
    */
   handleHeroTap(event) {
+    // First real interaction: a good moment to ask about notifications
+    if (!this.notificationsRequested) {
+      this.notificationsRequested = true;
+      requestNotifications(START_DATE);
+    }
+
     if (!this.animationsEnabled) return;
 
     tapHaptic();
@@ -487,6 +496,16 @@ export class LoveTimerApp {
   }
 
   /**
+   * The appearance the system is currently asking for
+   * @returns {'dark'|'light'}
+   */
+  getSystemTheme() {
+    return window.matchMedia?.('(prefers-color-scheme: dark)').matches
+      ? 'dark'
+      : 'light';
+  }
+
+  /**
    * Update theme based on preference
    */
   updateTheme() {
@@ -494,15 +513,16 @@ export class LoveTimerApp {
       let activeTheme = this.currentTheme;
 
       if (activeTheme === 'auto' && THEME_CONFIG.respectSystemPreference) {
-        activeTheme = window.matchMedia('(prefers-color-scheme: dark)').matches
-          ? 'dark'
-          : 'light';
+        activeTheme = this.getSystemTheme();
       }
 
       document.documentElement.setAttribute('data-theme', activeTheme);
 
-      // Keep the iOS status bar text legible on the new background
-      syncStatusBar(activeTheme);
+      // The status bar needs a concrete appearance, so resolve 'auto' even
+      // when the CSS is left to follow prefers-color-scheme on its own
+      syncStatusBar(
+        activeTheme === 'auto' ? this.getSystemTheme() : activeTheme
+      );
 
       // Update button text
       if (this.cachedElements.themeStatus) {
@@ -817,7 +837,13 @@ export class LoveTimerApp {
   }
 
   /**
-   * Check for milestone celebrations
+   * Check for milestone celebrations.
+   *
+   * The first call only records where we are, so opening the app long after
+   * a milestone does not replay it. After that, any crossing celebrates —
+   * we deliberately do not require the tick to land exactly on the boundary,
+   * because setInterval drifts and pauses while the app is hidden, which
+   * would make the celebration almost never fire.
    */
   checkMilestone(elapsedSeconds) {
     try {
@@ -825,11 +851,12 @@ export class LoveTimerApp {
         elapsedSeconds / ANIMATION_CONFIG.MILESTONE_INTERVAL
       );
 
-      // Fire confetti when we hit a new million-second milestone
-      if (
-        currentMilestone > this.lastMilestone &&
-        elapsedSeconds % ANIMATION_CONFIG.MILESTONE_INTERVAL === 0
-      ) {
+      if (this.lastMilestone === null) {
+        this.lastMilestone = currentMilestone;
+        return;
+      }
+
+      if (currentMilestone > this.lastMilestone) {
         this.triggerMilestoneConfetti(currentMilestone);
         this.lastMilestone = currentMilestone;
       }
@@ -1270,6 +1297,10 @@ document.addEventListener('DOMContentLoaded', () => {
     initializeLoveTimer();
   } catch (error) {
     console.error('Failed to initialize Love Timer:', error);
+
+    // The app never got far enough to hide it itself, and a native launch
+    // screen left up would cover the error below
+    hideSplashScreen();
 
     // Fallback error display
     const errorContainer = document.getElementById('error-container');
