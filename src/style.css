@@ -227,6 +227,22 @@
   display: none !important;
 }
 
+/* === Native app behavior (iOS WKWebView / standalone) === */
+html {
+  /* No rubber-band overscroll: the app should feel anchored, not like a page */
+  overscroll-behavior: none;
+  /* Keep text size stable when iOS rotates or applies accessibility zoom */
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  overscroll-behavior: none;
+  -webkit-tap-highlight-color: transparent;
+  /* No copy/share callout when long-pressing decorative UI */
+  -webkit-touch-callout: none;
+}
+
 /* === Focus Management === */
 :focus {
   outline: none;

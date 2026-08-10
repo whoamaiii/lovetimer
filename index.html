@@ -2,22 +2,56 @@
 <html lang="en" dir="auto">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <meta name="description" content="A romantic love timer counting precious moments together since our anniversary" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
+    />
+    <meta
+      name="description"
+      content="A romantic love timer counting precious moments together since our anniversary"
+    />
     <meta name="author" content="Love Timer App" />
-    <meta name="keywords" content="love, timer, anniversary, relationship, romance" />
-    <meta name="theme-color" content="#0b0b16" media="(prefers-color-scheme: dark)" />
-    <meta name="theme-color" content="#e8ecfb" media="(prefers-color-scheme: light)" />
+    <meta
+      name="keywords"
+      content="love, timer, anniversary, relationship, romance"
+    />
+    <meta
+      name="theme-color"
+      content="#0b0b16"
+      media="(prefers-color-scheme: dark)"
+    />
+    <meta
+      name="theme-color"
+      content="#e8ecfb"
+      media="(prefers-color-scheme: light)"
+    />
+
+    <!-- iOS app behavior (native wrapper and home-screen installs) -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta
+      name="apple-mobile-web-app-status-bar-style"
+      content="black-translucent"
+    />
+    <meta name="apple-mobile-web-app-title" content="Love Timer" />
+    <meta name="format-detection" content="telephone=no" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
 
     <!-- Open Graph / Social Media -->
     <meta property="og:title" content="Our Love Timer 💕" />
-    <meta property="og:description" content="Counting every precious second of our love story" />
+    <meta
+      property="og:description"
+      content="Counting every precious second of our love story"
+    />
     <meta property="og:type" content="website" />
 
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary" />
     <meta name="twitter:title" content="Our Love Timer 💕" />
-    <meta name="twitter:description" content="Counting every precious second of our love story" />
+    <meta
+      name="twitter:description"
+      content="Counting every precious second of our love story"
+    />
 
     <!-- Favicon (inline heart, no external asset needed) -->
     <link
@@ -58,7 +92,9 @@
         title="Toggle animations"
       >
         <span class="control-icon" aria-hidden="true">✦</span>
-        <span id="animation-status" class="control-label">Pause animations</span>
+        <span id="animation-status" class="control-label"
+          >Pause animations</span
+        >
       </button>
       <span class="control-divider" aria-hidden="true"></span>
       <button
@@ -80,11 +116,17 @@
       </header>
 
       <section aria-labelledby="timer-section-heading" class="timer-section">
-        <h2 id="timer-section-heading" class="visually-hidden">Love Timer Display</h2>
+        <h2 id="timer-section-heading" class="visually-hidden">
+          Love Timer Display
+        </h2>
 
         <!-- Main glass hero card with diffraction edge -->
         <div class="hero-card glass diffract" id="hero-card">
-          <div class="breakdown" role="group" aria-label="Time together, broken down">
+          <div
+            class="breakdown"
+            role="group"
+            aria-label="Time together, broken down"
+          >
             <div class="unit-tile glass-inner">
               <span class="unit-value" id="time-days">–</span>
               <span class="unit-label" id="label-days">days</span>
@@ -131,14 +173,22 @@
               aria-valuemax="100"
               aria-valuenow="0"
             >
-              <div class="anniversary-progress-fill" id="anniversary-progress-fill"></div>
+              <div
+                class="anniversary-progress-fill"
+                id="anniversary-progress-fill"
+              ></div>
             </div>
           </div>
         </div>
       </section>
 
-      <section aria-labelledby="message-section-heading" class="message-section">
-        <h2 id="message-section-heading" class="visually-hidden">Romantic Messages</h2>
+      <section
+        aria-labelledby="message-section-heading"
+        class="message-section"
+      >
+        <h2 id="message-section-heading" class="visually-hidden">
+          Romantic Messages
+        </h2>
         <div class="message-card glass diffract">
           <div
             class="message"
@@ -157,7 +207,12 @@
       </footer>
 
       <!-- Decorative elements hidden from screen readers -->
-      <div class="hearts-container" id="hearts-container" aria-hidden="true" role="presentation"></div>
+      <div
+        class="hearts-container"
+        id="hearts-container"
+        aria-hidden="true"
+        role="presentation"
+      ></div>
     </main>
 
     <!-- Settings sheet: edit the anniversary date -->
@@ -174,10 +229,20 @@
       <p class="sheet-subtitle">Pick the day your story began.</p>
       <label class="sheet-label" for="start-date-input">Start date</label>
       <input id="start-date-input" class="sheet-input" type="date" />
-      <button id="reset-date" class="sheet-reset" type="button">Use our original date</button>
+      <button id="reset-date" class="sheet-reset" type="button">
+        Use our original date
+      </button>
       <div class="sheet-actions">
-        <button id="cancel-settings" class="sheet-button secondary" type="button">Cancel</button>
-        <button id="save-date" class="sheet-button primary" type="button">Save</button>
+        <button
+          id="cancel-settings"
+          class="sheet-button secondary"
+          type="button"
+        >
+          Cancel
+        </button>
+        <button id="save-date" class="sheet-button primary" type="button">
+          Save
+        </button>
       </div>
     </div>
 
