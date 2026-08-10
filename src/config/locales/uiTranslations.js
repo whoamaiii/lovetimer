@@ -28,7 +28,14 @@ export default {
     unitMonthOther: 'months',
     durationSummary: 'that is {duration} of us',
     resetDate: 'Use our original date',
-    nextAnniversaryProgress: 'Progress toward the next anniversary'
+    nextAnniversaryProgress: 'Progress toward the next anniversary',
+    notifAnniversaryTitle: 'Happy Anniversary! 💕',
+    notifAnniversaryBody:
+      'Today marks another year of us. Open Love Timer and celebrate 🎉',
+    notifMonthlyTitle: 'Another month together 💞',
+    notifMonthlyBody: 'It is your monthly anniversary today.',
+    notifMilestoneTitle: 'A million more seconds of us ✨',
+    notifMilestoneBody: '{count} million seconds together — come see the timer.'
   },
   'es-ES': {
     loading: 'Cargando temporizador de amor...',
@@ -58,6 +65,14 @@ export default {
     unitMonthOther: 'meses',
     durationSummary: 'eso es {duration} de nosotros',
     resetDate: 'Usar nuestra fecha original',
-    nextAnniversaryProgress: 'Progreso hacia el próximo aniversario'
+    nextAnniversaryProgress: 'Progreso hacia el próximo aniversario',
+    notifAnniversaryTitle: '¡Feliz aniversario! 💕',
+    notifAnniversaryBody:
+      'Hoy cumplimos otro año juntos. Abre Love Timer y celébralo 🎉',
+    notifMonthlyTitle: 'Otro mes juntos 💞',
+    notifMonthlyBody: 'Hoy es vuestro aniversario mensual.',
+    notifMilestoneTitle: 'Un millón más de segundos juntos ✨',
+    notifMilestoneBody:
+      '{count} millones de segundos juntos — ven a ver el temporizador.'
   }
 };

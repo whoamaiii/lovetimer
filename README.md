@@ -29,8 +29,8 @@ see [docs/IPHONE_APP.md](docs/IPHONE_APP.md).
   card bursts a handful of hearts.
 - **Anniversary countdown** — days remaining until the next anniversary,
   with a confetti celebration on the day itself.
-- **Million-second milestones** — confetti and a special message every
-  million seconds.
+- **Million-second milestones** — confetti and a special message each time
+  another million seconds pass.
 - **Rotating romantic messages** — localized in 8 languages.
 - **Light / dark / auto themes** — follows the system by default, with the
   choice persisted.
@@ -39,6 +39,9 @@ see [docs/IPHONE_APP.md](docs/IPHONE_APP.md).
   `prefers-contrast` and print support.
 - **Performance-aware** — pauses updates when the tab is hidden, caps the
   number of floating hearts based on device capability.
+- **Native on iPhone** — haptic feedback, anniversary / monthly / milestone
+  notifications, a launch screen that fades into the rendered timer, and a
+  status bar that follows the theme (all no-ops in the browser).
 
 ---
 

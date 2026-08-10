@@ -79,10 +79,14 @@ describe('initializeLoveTimer DOM caching', () => {
 
     app.toggleTheme();
     expect(document.documentElement.getAttribute('data-theme')).toBe('light');
-    expect(app.cachedElements.themeStatus.textContent).toBe(getUIText('darkMode'));
+    expect(app.cachedElements.themeStatus.textContent).toBe(
+      getUIText('darkMode')
+    );
 
     app.toggleAnimations();
-    expect(document.documentElement.getAttribute('data-animations')).toBe('disabled');
+    expect(document.documentElement.getAttribute('data-animations')).toBe(
+      'disabled'
+    );
     expect(app.cachedElements.animationStatus.textContent).toBe(
       getUIText('resumeAnimations')
     );

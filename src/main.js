@@ -19,6 +19,15 @@ import {
   getConfigSummary
 } from './config/index.js';
 import { getTimeBreakdown, getYearMonthDiff } from './utils/timeBreakdown.js';
+import {
+  tapHaptic,
+  celebrationHaptic,
+  milestoneHaptic,
+  hideSplashScreen,
+  syncStatusBar,
+  scheduleLoveNotifications,
+  requestNotifications
+} from './native/nativeFeatures.js';
 
 /**
  * Main Love Timer Application Class
@@ -34,9 +43,11 @@ export class LoveTimerApp {
     this.cachedElements = {};
     this.currentMessageIndex = 0;
     this.anniversaryCelebrated = false;
-    this.lastMilestone = 0;
+    // null until the first timer tick establishes the current milestone
+    this.lastMilestone = null;
     this.heartCount = 0;
     this.isInitialized = false;
+    this.notificationsRequested = false;
     this.numberFormatter = null;
     this.dateFormatter = null;
     this.messages = [];
@@ -104,6 +115,11 @@ export class LoveTimerApp {
 
       // Hide loading
       this.hideLoading();
+
+      // Native shell: fade out the launch screen now that the timer is
+      // rendered, and refresh the reminders if they were already allowed
+      hideSplashScreen();
+      scheduleLoveNotifications(START_DATE);
 
       console.log('Love Timer initialized successfully', getConfigSummary());
     } catch (error) {
@@ -375,7 +391,15 @@ export class LoveTimerApp {
    * A small burst of hearts where the hero card is tapped
    */
   handleHeroTap(event) {
+    // First real interaction: a good moment to ask about notifications
+    if (!this.notificationsRequested) {
+      this.notificationsRequested = true;
+      requestNotifications(START_DATE);
+    }
+
     if (!this.animationsEnabled) return;
+
+    tapHaptic();
 
     try {
       confetti({
@@ -472,6 +496,16 @@ export class LoveTimerApp {
   }
 
   /**
+   * The appearance the system is currently asking for
+   * @returns {'dark'|'light'}
+   */
+  getSystemTheme() {
+    return window.matchMedia?.('(prefers-color-scheme: dark)').matches
+      ? 'dark'
+      : 'light';
+  }
+
+  /**
    * Update theme based on preference
    */
   updateTheme() {
@@ -479,12 +513,16 @@ export class LoveTimerApp {
       let activeTheme = this.currentTheme;
 
       if (activeTheme === 'auto' && THEME_CONFIG.respectSystemPreference) {
-        activeTheme = window.matchMedia('(prefers-color-scheme: dark)').matches
-          ? 'dark'
-          : 'light';
+        activeTheme = this.getSystemTheme();
       }
 
       document.documentElement.setAttribute('data-theme', activeTheme);
+
+      // The status bar needs a concrete appearance, so resolve 'auto' even
+      // when the CSS is left to follow prefers-color-scheme on its own
+      syncStatusBar(
+        activeTheme === 'auto' ? this.getSystemTheme() : activeTheme
+      );
 
       // Update button text
       if (this.cachedElements.themeStatus) {
@@ -799,7 +837,13 @@ export class LoveTimerApp {
   }
 
   /**
-   * Check for milestone celebrations
+   * Check for milestone celebrations.
+   *
+   * The first call only records where we are, so opening the app long after
+   * a milestone does not replay it. After that, any crossing celebrates —
+   * we deliberately do not require the tick to land exactly on the boundary,
+   * because setInterval drifts and pauses while the app is hidden, which
+   * would make the celebration almost never fire.
    */
   checkMilestone(elapsedSeconds) {
     try {
@@ -807,11 +851,12 @@ export class LoveTimerApp {
         elapsedSeconds / ANIMATION_CONFIG.MILESTONE_INTERVAL
       );
 
-      // Fire confetti when we hit a new million-second milestone
-      if (
-        currentMilestone > this.lastMilestone &&
-        elapsedSeconds % ANIMATION_CONFIG.MILESTONE_INTERVAL === 0
-      ) {
+      if (this.lastMilestone === null) {
+        this.lastMilestone = currentMilestone;
+        return;
+      }
+
+      if (currentMilestone > this.lastMilestone) {
         this.triggerMilestoneConfetti(currentMilestone);
         this.lastMilestone = currentMilestone;
       }
@@ -856,6 +901,8 @@ export class LoveTimerApp {
   triggerConfetti() {
     if (!this.animationsEnabled) return;
 
+    celebrationHaptic();
+
     try {
       confetti({
         particleCount: 100,
@@ -873,6 +920,8 @@ export class LoveTimerApp {
    */
   triggerMilestoneConfetti(milestone) {
     if (!this.animationsEnabled) return;
+
+    milestoneHaptic();
 
     try {
       // More dramatic confetti for milestones
@@ -1104,6 +1153,9 @@ export class LoveTimerApp {
       }
 
       this.hideLoading();
+
+      // Never leave the native launch screen stuck over an error state
+      hideSplashScreen();
     } catch (error) {
       console.error('Show error failed:', error);
     }
@@ -1245,6 +1297,10 @@ document.addEventListener('DOMContentLoaded', () => {
     initializeLoveTimer();
   } catch (error) {
     console.error('Failed to initialize Love Timer:', error);
+
+    // The app never got far enough to hide it itself, and a native launch
+    // screen left up would cover the error below
+    hideSplashScreen();
 
     // Fallback error display
     const errorContainer = document.getElementById('error-container');

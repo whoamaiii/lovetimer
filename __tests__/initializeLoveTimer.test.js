@@ -1,5 +1,4 @@
 import { jest } from '@jest/globals';
-import { screen } from '@testing-library/dom';
 import { THEME_CONFIG, getUIText } from '../src/config/index.js';
 
 // Prevent CSS imports from breaking tests for ESM
@@ -16,10 +15,12 @@ beforeAll(async () => {
 
 describe('initializeLoveTimer', () => {
   test('instantiates LoveTimerApp and calls init', () => {
-    const initSpy = jest.spyOn(LoveTimerApp.prototype, 'init').mockImplementation(() => {
-      // set flag so we know this method was called on instance
-      return undefined;
-    });
+    const initSpy = jest
+      .spyOn(LoveTimerApp.prototype, 'init')
+      .mockImplementation(() => {
+        // set flag so we know this method was called on instance
+        return undefined;
+      });
 
     const timer = initializeLoveTimer();
 
@@ -90,10 +91,14 @@ describe('initializeLoveTimer DOM interactions', () => {
 
     app.toggleTheme();
     expect(document.documentElement.getAttribute('data-theme')).toBe('light');
-    expect(app.cachedElements.themeStatus.textContent).toBe(getUIText('darkMode'));
+    expect(app.cachedElements.themeStatus.textContent).toBe(
+      getUIText('darkMode')
+    );
 
     app.toggleAnimations();
-    expect(document.documentElement.getAttribute('data-animations')).toBe('disabled');
+    expect(document.documentElement.getAttribute('data-animations')).toBe(
+      'disabled'
+    );
     expect(app.cachedElements.animationStatus.textContent).toBe(
       getUIText('resumeAnimations')
     );
