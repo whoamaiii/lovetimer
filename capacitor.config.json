@@ -8,5 +8,12 @@
     "backgroundColor": "#0b0b16",
     "preferredContentMode": "mobile",
     "scrollEnabled": true
+  },
+  "plugins": {
+    "SplashScreen": {
+      "launchAutoHide": false,
+      "backgroundColor": "#0b0b16",
+      "showSpinner": false
+    }
   }
 }

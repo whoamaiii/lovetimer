@@ -19,6 +19,14 @@ import {
   getConfigSummary
 } from './config/index.js';
 import { getTimeBreakdown, getYearMonthDiff } from './utils/timeBreakdown.js';
+import {
+  tapHaptic,
+  celebrationHaptic,
+  milestoneHaptic,
+  hideSplashScreen,
+  syncStatusBar,
+  scheduleLoveNotifications
+} from './native/nativeFeatures.js';
 
 /**
  * Main Love Timer Application Class
@@ -104,6 +112,11 @@ export class LoveTimerApp {
 
       // Hide loading
       this.hideLoading();
+
+      // Native shell: fade out the launch screen now that the timer is
+      // rendered, and (re)schedule anniversary/milestone notifications
+      hideSplashScreen();
+      scheduleLoveNotifications(START_DATE);
 
       console.log('Love Timer initialized successfully', getConfigSummary());
     } catch (error) {
@@ -377,6 +390,8 @@ export class LoveTimerApp {
   handleHeroTap(event) {
     if (!this.animationsEnabled) return;
 
+    tapHaptic();
+
     try {
       confetti({
         particleCount: 18,
@@ -485,6 +500,9 @@ export class LoveTimerApp {
       }
 
       document.documentElement.setAttribute('data-theme', activeTheme);
+
+      // Keep the iOS status bar text legible on the new background
+      syncStatusBar(activeTheme);
 
       // Update button text
       if (this.cachedElements.themeStatus) {
@@ -856,6 +874,8 @@ export class LoveTimerApp {
   triggerConfetti() {
     if (!this.animationsEnabled) return;
 
+    celebrationHaptic();
+
     try {
       confetti({
         particleCount: 100,
@@ -873,6 +893,8 @@ export class LoveTimerApp {
    */
   triggerMilestoneConfetti(milestone) {
     if (!this.animationsEnabled) return;
+
+    milestoneHaptic();
 
     try {
       // More dramatic confetti for milestones
@@ -1104,6 +1126,9 @@ export class LoveTimerApp {
       }
 
       this.hideLoading();
+
+      // Never leave the native launch screen stuck over an error state
+      hideSplashScreen();
     } catch (error) {
       console.error('Show error failed:', error);
     }

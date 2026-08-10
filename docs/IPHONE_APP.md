@@ -109,10 +109,27 @@ macOS runners.
 After changing any web code, run `npm run ios:sync` and then run the app again
 from Xcode — the native shell rarely needs to change.
 
+## Native features
+
+- **Haptics** — a soft tap when you burst hearts on the hero card, a heavy
+  thump on million-second milestones, and a success buzz on the anniversary.
+- **Notifications** — on first launch the app asks for notification
+  permission. If you allow it, you get a good-morning notification at 9:00 on
+  your anniversary, on each monthly "-versary", and when the next
+  million-second milestone ticks over.
+- **Launch handoff** — the launch screen fades out only after the timer has
+  rendered, so there's no white flash in between.
+- **Status bar** — follows the app theme so the clock stays legible in both
+  light and dark mode.
+
+All of this lives in `src/native/nativeFeatures.js` and is a no-op when the
+app runs in a regular browser.
+
 ## How the native shell is configured
 
-- `capacitor.config.json` — app id (`com.lovetimer.app`), app name, and the
-  dark background color used behind the WebView.
+- `capacitor.config.json` — app id (`com.lovetimer.app`), app name, the
+  dark background color used behind the WebView, and the splash screen
+  behavior (auto-hide off; the app hides it itself after first render).
 - `ios/App/App/Info.plist` — portrait-only on iPhone, no non-exempt
   encryption (avoids export-compliance questions when signing).
 - `assets/icon.svg`, `assets/splash.svg`, `assets/splash-dark.svg` — the

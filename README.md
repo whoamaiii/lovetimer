@@ -39,6 +39,9 @@ see [docs/IPHONE_APP.md](docs/IPHONE_APP.md).
   `prefers-contrast` and print support.
 - **Performance-aware** — pauses updates when the tab is hidden, caps the
   number of floating hearts based on device capability.
+- **Native on iPhone** — haptic feedback, anniversary / monthly / milestone
+  notifications, a launch screen that fades into the rendered timer, and a
+  status bar that follows the theme (all no-ops in the browser).
 
 ---
 
