@@ -1,5 +1,6 @@
 import {
   buildLoveNotifications,
+  clampDayToMonth,
   getNextMillionSecondMilestone,
   NOTIFICATION_IDS,
   NOTIFICATION_HOUR
@@ -80,5 +81,44 @@ describe('buildLoveNotifications', () => {
   test('uses unique notification ids', () => {
     const ids = notifications.map((n) => n.id);
     expect(new Set(ids).size).toBe(ids.length);
+  });
+});
+
+describe('clampDayToMonth', () => {
+  test('leaves days that exist in the month alone', () => {
+    expect(clampDayToMonth(6, 4)).toBe(4);
+    expect(clampDayToMonth(1, 31)).toBe(31);
+  });
+
+  test('clamps to the last day of shorter months', () => {
+    expect(clampDayToMonth(2, 30)).toBe(28); // February
+    expect(clampDayToMonth(4, 31)).toBe(30); // April
+  });
+});
+
+describe('buildLoveNotifications with a late-month anniversary', () => {
+  // The 31st does not exist in every month; without clamping, iOS would
+  // silently never deliver those monthly reminders.
+  const start = new Date('2024-01-31T20:00:00');
+  const notifications = buildLoveNotifications(start, new Date('2025-01-15'));
+
+  test('still schedules a reminder in every month', () => {
+    const monthly = notifications.filter(
+      (n) => n.id >= NOTIFICATION_IDS.MONTHLY * 100
+    );
+
+    expect(monthly).toHaveLength(11);
+    monthly.forEach((n) => {
+      const { month, day } = n.schedule.on;
+      expect(day).toBe(clampDayToMonth(month, 31));
+    });
+  });
+
+  test('keeps the real day for the yearly anniversary', () => {
+    const anniversary = notifications.find(
+      (n) => n.id === NOTIFICATION_IDS.ANNIVERSARY
+    );
+
+    expect(anniversary.schedule.on).toMatchObject({ month: 1, day: 31 });
   });
 });
