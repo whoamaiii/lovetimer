@@ -44,11 +44,27 @@ function createStartDate(dateInput) {
   return date;
 }
 
-// Default start date (6 months ago)
+// Storage key for the user's chosen anniversary date
+export const START_DATE_STORAGE_KEY = 'love-timer-start-date';
+
+/**
+ * Read a previously saved start date, if any.
+ * @returns {string|null} ISO date string or null
+ */
+function readStoredStartDate() {
+  try {
+    return localStorage.getItem(START_DATE_STORAGE_KEY);
+  } catch {
+    return null;
+  }
+}
+
+// User-chosen date if saved, otherwise a default of 6 months ago
 export const START_DATE = createStartDate(
-  (() => {
-    const defaultDate = new Date();
-    defaultDate.setMonth(defaultDate.getMonth() - 6);
-    return defaultDate;
-  })()
+  readStoredStartDate() ||
+    (() => {
+      const defaultDate = new Date();
+      defaultDate.setMonth(defaultDate.getMonth() - 6);
+      return defaultDate;
+    })()
 );

@@ -1,118 +1,124 @@
 # Love Timer ⏰💕
 
-A simple Love Timer app to help users track time since a start date, built with Vite. This project is configured to be "Codex-ready".
+A romantic timer that counts every second since your anniversary, remastered
+with a **Liquid Glass** interface inspired by the latest iOS design language:
+translucent, refractive panels with specular highlights and a slowly
+travelling spectral "diffraction" edge, floating over an ambient light scene.
+
+Built with Vite and vanilla JavaScript — no framework required.
 
 ---
 
-## Prerequisites
+## Features
 
-- Node.js (Version specified in `.devcontainer/devcontainer.json`, e.g., Node 20 or as managed by your environment)
-- An OpenAI API Key (if any AI-related features are used by Codex, to be set in the environment)
-- A JWT Secret (for any auth features, to be set in the environment)
-- Optionally, a MongoDB instance if database features are used (e.g., `mongodb://localhost:27017/lovetimer`)
+- **Live time breakdown** — days, hours, minutes and seconds together,
+  plus the running total of seconds.
+- **Editable anniversary date** — pick your own date in a glass settings
+  sheet; it is persisted in `localStorage`.
+- **Anniversary countdown** — days remaining until the next anniversary,
+  with a confetti celebration on the day itself.
+- **Million-second milestones** — confetti and a special message every
+  million seconds.
+- **Rotating romantic messages** — localized in 8 languages.
+- **Light / dark / auto themes** — follows the system by default, with the
+  choice persisted.
+- **Accessibility** — skip link, ARIA live regions, keyboard navigation,
+  screen-reader announcements, and full `prefers-reduced-motion`,
+  `prefers-contrast` and print support.
+- **Performance-aware** — pauses updates when the tab is hidden, caps the
+  number of floating hearts based on device capability.
 
 ---
 
 ## Setup
 
-1.  **Clone the repository:**
-    ```bash
-    git clone https://github.com/whoamaiii/lovetimer.git
-    cd lovetimer
-    ```
+1. **Clone the repository:**
 
-2.  **Install dependencies:**
-    The `setup.sh` script (run by DevContainer or `codex.json` setup) handles this. Manually:
-    ```bash
-    npm install
-    ```
-    If not using DevContainer/Codex setup, run `bash setup.sh` once to ensure all dev tools and configs are set up.
-    **You must complete this step before running `npm run test` or `npm run lint`.**
+   ```bash
+   git clone https://github.com/whoamaiii/lovetimer.git
+   cd lovetimer
+   ```
 
-3.  **Configure Environment (for Codex or local execution needing these):**
-    The `codex.json` file defines `secrets` that Codex will use:
-    - `OPENAI_API_KEY`: Your OpenAI API key.
-    - `JWT_SECRET`: A secure random string for JWTs.
-    - `DATABASE_URL`: Defaults to `mongodb://localhost:27017/lovetimer`.
-    If running locally and these are needed by the application logic (currently they are not directly used by the timer app itself but are placeholders for Codex), you might set them as environment variables.
+2. **Install dependencies:**
+
+   ```bash
+   npm install
+   ```
+
+   You must complete this step before running `npm run test` or `npm run lint`.
 
 ---
 
 ## Running the Application
 
--   **Development Mode (Vite dev server):**
-    ```bash
-    npm run dev
-    ```
-    Access at: `http://localhost:5173` (or next available port if 5173 is busy).
+- **Development mode (Vite dev server):**
 
--   **Production-like Mode (Builds then serves with Vite preview):**
-    ```bash
-    npm run start
-    ```
-    This runs `bin/launch.sh`, which builds the app and then serves it.
-Access at: `http://localhost:3000`.
+  ```bash
+  npm run dev
+  ```
+
+  Access at: `http://localhost:5173`.
+
+- **Production-like mode (builds then serves with Vite preview):**
+
+  ```bash
+  npm run start
+  ```
+
+  Access at: `http://localhost:3000`.
 
 ---
 
-## Entry Point
+## Code Structure
 
-The global entry point for the application is **`initializeLoveTimer`** in
-`src/main.js`. This helper creates a `LoveTimerApp`, calls its `init()` method
-and exposes the instance on `window.loveTimer` after the DOM is ready. The core
-timer logic lives in **`timer.js`**, while **`theme.js`** and **`ui.js`** act as
-helper modules for theme handling and user-interface updates.
+- **`index.html`** — the Liquid Glass layout: ambient scene, glass control
+  bar, hero card with time tiles, message card, settings sheet.
+- **`src/main.js`** — exports `LoveTimerApp` (all timer, theme, animation and
+  settings logic) and `initializeLoveTimer`, the bootstrap that creates the
+  app instance and exposes it on `window.loveTimer`.
+- **`src/style.css`** — design tokens and the glass material system
+  (`.glass`, `.glass-inner`, `.diffract`), themes, and animations.
+- **`src/config/`** — modular configuration: start date, locales and
+  translations, animation/performance/theme/accessibility settings, and
+  validation.
+- **`src/utils/timeBreakdown.js`** — pure helper that splits total seconds
+  into days / hours / minutes / seconds.
+- **`__tests__/`** — Jest test suites (jsdom environment).
 
 ---
 
 ## Testing
 
--   Run all tests using Jest (after running `npm install` and `bash setup.sh` if
-    they haven't been executed automatically):
-    ```bash
-    npm run test
-    ```
+Run all tests with Jest (after `npm install`):
+
+```bash
+npm run test
+```
 
 ---
 
-## Linting
+## Linting and Formatting
 
--   Run ESLint to check for code quality issues (make sure dependencies are
-    installed and `bash setup.sh` has been executed):
-    ```bash
-    npm run lint
-    ```
+```bash
+npm run lint     # ESLint over src/
+npm run format   # Prettier over src/
+```
 
 ---
 
 ## DevContainer
 
-This project includes a DevContainer configuration (`.devcontainer/devcontainer.json`). If you open this project in a DevContainer-compatible editor (like VS Code with the Dev Containers extension):
-- A consistent development environment will be created based on the specified Node.js image.
-- The `setup.sh` script will be run automatically via `postCreateCommand` to install dependencies and configure the project.
-- Ports 3000 and 5173 will be forwarded.
+This project includes a DevContainer configuration
+(`.devcontainer/devcontainer.json`). Opening the project in a
+DevContainer-compatible editor will set up Node, install dependencies via
+`setup.sh`, and forward ports 3000 and 5173.
 
 ---
 
-## Codex Integration
+## AI Agent Integration
 
-This project is configured for use with AI coding assistants like OpenAI Codex:
+This project is configured for use with AI coding assistants:
 
--   **`codex.json`**: The manifest file that tells Codex how to initialize, run, test, and manage the environment for this project. It defines entrypoints, environment variables/secrets, and setup scripts.
--   **`AGENTS.md`**: (To be created/verified) Provides guidance and instructions for AI agents working on this codebase.
--   **Standardized NPM Scripts**:
-    -   `npm run start`: For the main application entrypoint.
-    -   `npm run dev`: For the development server.
-    -   `npm run test`: For running automated tests.
-    -   `npm run lint`: For code linting.
--   **Setup Script (`setup.sh`)**: Automates the installation of dependencies and generation of necessary configuration files (`tsconfig.json`, `.eslintrc.json`, etc.).
----
-
-## Code Structure
-
-- **`src/main.js`** – exports `initializeLoveTimer`, the global bootstrap that creates the app instance.
-- **`src/timer.js`** – houses the core timer logic.
-- **`src/theme.js`** – helper module for managing themes.
-- **`src/ui.js`** – helper module for DOM updates and interactions.
-
----
+- **`codex.json`** — manifest describing entrypoints, setup and test commands.
+- **`AGENTS.md`** — guidance for AI agents working on this codebase.
+- **Standardized npm scripts** — `start`, `dev`, `test`, `lint`, `format`.

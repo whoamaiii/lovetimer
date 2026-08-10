@@ -3,9 +3,9 @@
 
 import './style.css';
 import confetti from 'canvas-confetti';
-// Astronomical features have been removed
 import {
   START_DATE,
+  START_DATE_STORAGE_KEY,
   getMessages,
   getUIText,
   ANIMATION_CONFIG,
@@ -17,6 +17,7 @@ import {
   validateConfig,
   getConfigSummary
 } from './config/index.js';
+import { getTimeBreakdown } from './utils/timeBreakdown.js';
 
 /**
  * Main Love Timer Application Class
@@ -52,6 +53,9 @@ export class LoveTimerApp {
     this.toggleAnimations = this.toggleAnimations.bind(this);
     this.toggleTheme = this.toggleTheme.bind(this);
     this.retryInitialization = this.retryInitialization.bind(this);
+    this.openSettings = this.openSettings.bind(this);
+    this.closeSettings = this.closeSettings.bind(this);
+    this.saveStartDate = this.saveStartDate.bind(this);
   }
 
   /**
@@ -80,6 +84,9 @@ export class LoveTimerApp {
 
       // Initialize theme
       this.initializeTheme();
+
+      // Localize static UI labels
+      this.localizeStaticLabels();
 
       // Get localized messages
       this.messages = getMessages();
@@ -163,6 +170,49 @@ export class LoveTimerApp {
     this.cachedElements.animationStatus =
       document.getElementById('animation-status');
     this.cachedElements.themeStatus = document.getElementById('theme-status');
+
+    // Optional elements for the Liquid Glass layout. These are absent in
+    // minimal embeds (and in unit tests), so everything using them is guarded.
+    const optionalElements = [
+      'time-days',
+      'time-hours',
+      'time-minutes',
+      'time-seconds',
+      'label-days',
+      'label-hours',
+      'label-minutes',
+      'label-seconds',
+      'page-eyebrow',
+      'open-settings',
+      'settings-sheet',
+      'settings-backdrop',
+      'start-date-input',
+      'save-date',
+      'cancel-settings'
+    ];
+
+    optionalElements.forEach((id) => {
+      this.cachedElements[id] = document.getElementById(id);
+    });
+  }
+
+  /**
+   * Localize static labels that ship with English fallback text in the HTML
+   */
+  localizeStaticLabels() {
+    const labels = {
+      'label-days': 'unitDays',
+      'label-hours': 'unitHours',
+      'label-minutes': 'unitMinutes',
+      'label-seconds': 'unitSeconds',
+      'page-eyebrow': 'togetherFor'
+    };
+
+    Object.entries(labels).forEach(([id, key]) => {
+      if (this.cachedElements[id]) {
+        this.cachedElements[id].textContent = getUIText(key);
+      }
+    });
   }
 
   /**
@@ -222,6 +272,35 @@ export class LoveTimerApp {
         this.retryInitialization
       );
     }
+
+    // Settings sheet (optional elements)
+    if (this.cachedElements['open-settings']) {
+      this.cachedElements['open-settings'].addEventListener(
+        'click',
+        this.openSettings
+      );
+    }
+
+    if (this.cachedElements['cancel-settings']) {
+      this.cachedElements['cancel-settings'].addEventListener(
+        'click',
+        this.closeSettings
+      );
+    }
+
+    if (this.cachedElements['settings-backdrop']) {
+      this.cachedElements['settings-backdrop'].addEventListener(
+        'click',
+        this.closeSettings
+      );
+    }
+
+    if (this.cachedElements['save-date']) {
+      this.cachedElements['save-date'].addEventListener(
+        'click',
+        this.saveStartDate
+      );
+    }
   }
 
   /**
@@ -253,7 +332,14 @@ export class LoveTimerApp {
   handleKeydown(event) {
     switch (event.key) {
       case 'Escape':
-        if (this.cachedElements['error-container'].style.display !== 'none') {
+        if (
+          this.cachedElements['settings-sheet'] &&
+          !this.cachedElements['settings-sheet'].hidden
+        ) {
+          this.closeSettings();
+        } else if (
+          this.cachedElements['error-container'].style.display !== 'none'
+        ) {
           this.hideError();
         }
         break;
@@ -389,7 +475,12 @@ export class LoveTimerApp {
       }
 
       const formattedNumber = this.numberFormatter.format(difference);
-      this.cachedElements.timer.textContent = `${formattedNumber} ${getUIText('seconds')}`;
+      this.cachedElements.timer.textContent = getUIText('totalSeconds', {
+        count: formattedNumber
+      });
+
+      // Update the days / hours / minutes / seconds tiles
+      this.updateBreakdown(difference);
 
       // Check for milestones
       this.checkMilestone(difference);
@@ -397,6 +488,22 @@ export class LoveTimerApp {
       console.error('Timer update error:', error);
       this.cachedElements.timer.textContent = getUIText('timerError');
     }
+  }
+
+  /**
+   * Update the days / hours / minutes / seconds breakdown tiles
+   */
+  updateBreakdown(totalSeconds) {
+    if (!this.cachedElements['time-days']) return;
+
+    const { days, hours, minutes, seconds } = getTimeBreakdown(totalSeconds);
+    const pad = (value) => String(value).padStart(2, '0');
+
+    this.cachedElements['time-days'].textContent =
+      this.numberFormatter.format(days);
+    this.cachedElements['time-hours'].textContent = pad(hours);
+    this.cachedElements['time-minutes'].textContent = pad(minutes);
+    this.cachedElements['time-seconds'].textContent = pad(seconds);
   }
 
   /**
@@ -694,6 +801,74 @@ export class LoveTimerApp {
       }
     } catch (error) {
       console.error('Toggle theme error:', error);
+    }
+  }
+
+  /**
+   * Open the settings sheet to edit the anniversary date
+   */
+  openSettings() {
+    const sheet = this.cachedElements['settings-sheet'];
+    const backdrop = this.cachedElements['settings-backdrop'];
+    const input = this.cachedElements['start-date-input'];
+    if (!sheet) return;
+
+    if (input) {
+      // Prefill with the current start date (local date, not UTC)
+      const local = new Date(
+        START_DATE.getTime() - START_DATE.getTimezoneOffset() * 60_000
+      );
+      input.value = local.toISOString().slice(0, 10);
+      input.max = new Date().toISOString().slice(0, 10);
+    }
+
+    sheet.hidden = false;
+    if (backdrop) backdrop.hidden = false;
+    if (input) input.focus();
+  }
+
+  /**
+   * Close the settings sheet without saving
+   */
+  closeSettings() {
+    const sheet = this.cachedElements['settings-sheet'];
+    const backdrop = this.cachedElements['settings-backdrop'];
+
+    if (sheet) sheet.hidden = true;
+    if (backdrop) backdrop.hidden = true;
+
+    if (this.cachedElements['open-settings']) {
+      this.cachedElements['open-settings'].focus();
+    }
+  }
+
+  /**
+   * Persist the chosen anniversary date and reload with the new value
+   */
+  saveStartDate() {
+    const input = this.cachedElements['start-date-input'];
+    if (!input || !input.value) {
+      this.closeSettings();
+      return;
+    }
+
+    const chosen = new Date(input.value);
+    if (isNaN(chosen.getTime())) {
+      this.closeSettings();
+      return;
+    }
+
+    try {
+      localStorage.setItem(START_DATE_STORAGE_KEY, input.value);
+    } catch (error) {
+      console.warn('Could not persist start date:', error);
+    }
+
+    // START_DATE is resolved at module load, so reload to apply it
+    try {
+      window.location.reload();
+    } catch {
+      this.closeSettings();
     }
   }
 

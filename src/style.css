@@ -1,16 +1,66 @@
-/* === CSS Custom Properties for Theming === */
+/* ============================================================
+   Love Timer — Liquid Glass remaster
+   Design language inspired by iOS 26 "Liquid Glass":
+   - translucent, refractive surfaces (backdrop blur + saturation)
+   - specular top highlights and soft inner shading
+   - spectral "diffraction" edge light that slowly travels
+     around each pane
+   - an ambient light scene behind the glass so there is
+     something real to refract
+   ============================================================ */
+
+/* Registered property lets the diffraction angle animate smoothly.
+   Browsers without @property simply show a static spectral edge. */
+@property --diffract-angle {
+  syntax: '<angle>';
+  initial-value: 120deg;
+  inherits: false;
+}
+
+/* === Design Tokens === */
 :root {
-  /* Light theme colors */
-  --bg-gradient-start: #667eea;
-  --bg-gradient-middle: #764ba2;
-  --bg-gradient-end: #f093fb;
-  --text-primary: #ffffff;
-  --text-secondary: rgba(255, 255, 255, 0.85);
-  --text-shadow: rgba(0, 0, 0, 0.2);
-  --control-bg: rgba(255, 255, 255, 0.1);
-  --control-border: rgba(255, 255, 255, 0.2);
-  --error-bg: #dc3545;
-  --loading-bg: rgba(0, 0, 0, 0.8);
+  color-scheme: light;
+
+  /* Ambient scene (light) */
+  --scene-bg: #e9edfb;
+  --blob-1: #ffb3c7;
+  --blob-2: #b9c5ff;
+  --blob-3: #ffd9a8;
+
+  /* Ink */
+  --text-primary: #1c1c2e;
+  --text-secondary: rgba(28, 28, 46, 0.68);
+  --text-tertiary: rgba(28, 28, 46, 0.45);
+  --accent: #e0447c;
+  --accent-soft: rgba(224, 68, 124, 0.12);
+
+  /* Glass */
+  --glass-fill: rgba(255, 255, 255, 0.42);
+  --glass-fill-strong: rgba(255, 255, 255, 0.6);
+  --glass-inner-fill: rgba(255, 255, 255, 0.35);
+  --glass-stroke: rgba(255, 255, 255, 0.65);
+  --glass-specular: rgba(255, 255, 255, 0.9);
+  --glass-shade: rgba(30, 30, 60, 0.08);
+  --glass-shadow:
+    0 24px 60px rgba(30, 30, 80, 0.18), 0 4px 14px rgba(30, 30, 80, 0.08);
+  --glass-blur: 26px;
+  --glass-saturate: 170%;
+
+  /* Spectral diffraction edge */
+  --spectra: conic-gradient(
+    from var(--diffract-angle),
+    rgba(255, 80, 120, 0) 0%,
+    rgba(255, 90, 90, 0.55) 8%,
+    rgba(255, 190, 80, 0.5) 16%,
+    rgba(140, 235, 140, 0.45) 26%,
+    rgba(90, 200, 255, 0.55) 38%,
+    rgba(140, 120, 255, 0.5) 48%,
+    rgba(255, 100, 200, 0.45) 58%,
+    rgba(255, 80, 120, 0) 70%
+  );
+
+  --error-bg: rgba(220, 53, 69, 0.85);
+  --loading-bg: rgba(20, 20, 40, 0.35);
 
   /* Spacing */
   --spacing-xs: 0.25rem;
@@ -19,25 +69,36 @@
   --spacing-lg: 2rem;
   --spacing-xl: 3rem;
 
-  /* Typography */
-  --font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  --font-size-small: clamp(0.75rem, 1vw + 0.5rem, 1rem);
-  --font-size-base: clamp(1rem, 1.5vw + 0.5rem, 1.25rem);
-  --font-size-large: clamp(1.25rem, 2vw + 0.5rem, 1.5rem);
-  --font-size-xl: clamp(1.5rem, 2.5vw + 0.75rem, 2rem);
-  --font-size-2xl: clamp(2rem, 3vw + 1rem, 2.5rem);
-  --font-size-3xl: clamp(3rem, 4vw + 1rem, 4rem);
-  --font-size-4xl: clamp(4rem, 5vw + 1rem, 5rem);
+  /* Radius — large continuous curves, iOS style */
+  --radius-lg: 32px;
+  --radius-md: 22px;
+  --radius-sm: 14px;
+  --radius-pill: 999px;
 
-  /* Animations */
+  /* Typography — SF-first system stack */
+  --font-family:
+    -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text',
+    'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --font-size-small: clamp(0.75rem, 1vw + 0.5rem, 0.95rem);
+  --font-size-base: clamp(1rem, 1.5vw + 0.5rem, 1.2rem);
+  --font-size-large: clamp(1.15rem, 2vw + 0.5rem, 1.45rem);
+  --font-size-xl: clamp(1.35rem, 2.5vw + 0.75rem, 1.9rem);
+  --font-size-2xl: clamp(1.9rem, 3vw + 1rem, 2.4rem);
+  --font-size-3xl: clamp(2.4rem, 4vw + 1rem, 3.4rem);
+  --font-size-4xl: clamp(3rem, 5vw + 1rem, 4.6rem);
+
+  /* Motion */
   --animation-duration-fast: 0.15s;
   --animation-duration-normal: 0.3s;
   --animation-duration-slow: 0.5s;
-  --animation-easing: ease-out;
+  --animation-easing: cubic-bezier(0.32, 0.72, 0, 1);
 
   /* Z-index scale */
+  --z-index-scene: 0;
   --z-index-hearts: 1;
+  --z-index-content: 2;
   --z-index-controls: 10;
+  --z-index-sheet: 50;
   --z-index-loading: 100;
   --z-index-error: 1000;
   --z-index-skip-link: 9999;
@@ -45,47 +106,82 @@
 
 /* === Dark Theme === */
 [data-theme='dark'] {
-  --bg-gradient-start: #1a1a2e;
-  --bg-gradient-middle: #16213e;
-  --bg-gradient-end: #0f3460;
-  --text-primary: #ffffff;
-  --text-secondary: rgba(255, 255, 255, 0.9);
-  --control-bg: rgba(0, 0, 0, 0.3);
-  --control-border: rgba(255, 255, 255, 0.3);
+  color-scheme: dark;
+
+  --scene-bg: #0b0b16;
+  --blob-1: #5e2440;
+  --blob-2: #232a5c;
+  --blob-3: #452a63;
+
+  --text-primary: #f4f4fb;
+  --text-secondary: rgba(244, 244, 251, 0.72);
+  --text-tertiary: rgba(244, 244, 251, 0.45);
+  --accent: #ff6b9d;
+  --accent-soft: rgba(255, 107, 157, 0.16);
+
+  --glass-fill: rgba(30, 30, 55, 0.4);
+  --glass-fill-strong: rgba(38, 38, 66, 0.6);
+  --glass-inner-fill: rgba(255, 255, 255, 0.06);
+  --glass-stroke: rgba(255, 255, 255, 0.16);
+  --glass-specular: rgba(255, 255, 255, 0.35);
+  --glass-shade: rgba(0, 0, 10, 0.35);
+  --glass-shadow:
+    0 24px 60px rgba(0, 0, 15, 0.55), 0 4px 14px rgba(0, 0, 15, 0.35);
+
+  --loading-bg: rgba(5, 5, 15, 0.55);
 }
 
-/* === Dark mode preference === */
+/* Follow system preference until the user picks a theme */
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme]) {
-    --bg-gradient-start: #1a1a2e;
-    --bg-gradient-middle: #16213e;
-    --bg-gradient-end: #0f3460;
-    --text-primary: #ffffff;
-    --text-secondary: rgba(255, 255, 255, 0.9);
-    --control-bg: rgba(0, 0, 0, 0.3);
-    --control-border: rgba(255, 255, 255, 0.3);
+  :root:not([data-theme]),
+  :root[data-theme=''] {
+    color-scheme: dark;
+
+    --scene-bg: #0b0b16;
+    --blob-1: #5e2440;
+    --blob-2: #232a5c;
+    --blob-3: #452a63;
+
+    --text-primary: #f4f4fb;
+    --text-secondary: rgba(244, 244, 251, 0.72);
+    --text-tertiary: rgba(244, 244, 251, 0.45);
+    --accent: #ff6b9d;
+    --accent-soft: rgba(255, 107, 157, 0.16);
+
+    --glass-fill: rgba(30, 30, 55, 0.4);
+    --glass-fill-strong: rgba(38, 38, 66, 0.6);
+    --glass-inner-fill: rgba(255, 255, 255, 0.06);
+    --glass-stroke: rgba(255, 255, 255, 0.16);
+    --glass-specular: rgba(255, 255, 255, 0.35);
+    --glass-shade: rgba(0, 0, 10, 0.35);
+    --glass-shadow:
+      0 24px 60px rgba(0, 0, 15, 0.55), 0 4px 14px rgba(0, 0, 15, 0.35);
+
+    --loading-bg: rgba(5, 5, 15, 0.55);
   }
 }
 
 /* === High contrast mode === */
-@media (prefers-contrast: high) {
-  :root {
-    --bg-gradient-start: #000000;
-    --bg-gradient-middle: #000000;
-    --bg-gradient-end: #000000;
-    --text-primary: #ffffff;
-    --text-secondary: #ffffff;
-    --text-shadow: none;
-    --control-bg: #ffffff;
-    --control-border: #ffffff;
+@media (prefers-contrast: more) {
+  :root,
+  [data-theme='dark'] {
+    --glass-fill: Canvas;
+    --glass-stroke: CanvasText;
+    --text-primary: CanvasText;
+    --text-secondary: CanvasText;
+    --glass-blur: 0px;
   }
 
-  .title,
-  .timer,
-  .message,
-  .date {
-    text-shadow: none !important;
-    color: var(--text-primary) !important;
+  .glass,
+  .glass-inner {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+
+  .diffract::before,
+  .diffract::after,
+  .scene {
+    display: none !important;
   }
 }
 
@@ -124,24 +220,25 @@
 }
 
 :focus-visible {
-  outline: 2px solid var(--text-primary);
-  outline-offset: 2px;
-  border-radius: 4px;
-  box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.3);
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: var(--radius-sm);
 }
 
 /* === Skip Link === */
 .skip-link {
   position: absolute;
-  top: -40px;
+  top: -48px;
   left: 6px;
-  background: var(--text-primary);
-  color: var(--bg-gradient-start);
+  background: var(--glass-fill-strong);
+  color: var(--text-primary);
   padding: var(--spacing-sm) var(--spacing-md);
   text-decoration: none;
-  border-radius: 4px;
+  border-radius: var(--radius-pill);
   z-index: var(--z-index-skip-link);
   font-weight: 600;
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
   transition: top var(--animation-duration-normal) var(--animation-easing);
 }
 
@@ -149,23 +246,202 @@
   top: 6px;
 }
 
-/* === Body and Main Layout === */
+/* === Body === */
 body {
   font-family: var(--font-family);
-  background: linear-gradient(
-    135deg,
-    var(--bg-gradient-start) 0%,
-    var(--bg-gradient-middle) 50%,
-    var(--bg-gradient-end) 100%
-  );
+  background: var(--scene-bg);
   min-height: 100vh;
+  min-height: 100dvh;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   overflow-x: hidden;
   color: var(--text-primary);
-  line-height: 1.6;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  transition:
+    background-color 0.6s ease,
+    color 0.6s ease;
+}
+
+/* ============================================================
+   Ambient light scene — what the glass refracts
+   ============================================================ */
+.scene {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-index-scene);
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.scene-blob {
+  position: absolute;
+  width: 55vmax;
+  height: 55vmax;
+  border-radius: 50%;
+  filter: blur(70px);
+  opacity: 0.85;
+  will-change: transform;
+}
+
+.scene-blob-1 {
+  background: radial-gradient(
+    circle at 30% 30%,
+    var(--blob-1),
+    transparent 65%
+  );
+  top: -18vmax;
+  left: -12vmax;
+  animation: drift-a 26s ease-in-out infinite alternate;
+}
+
+.scene-blob-2 {
+  background: radial-gradient(
+    circle at 60% 40%,
+    var(--blob-2),
+    transparent 65%
+  );
+  bottom: -20vmax;
+  right: -14vmax;
+  animation: drift-b 32s ease-in-out infinite alternate;
+}
+
+.scene-blob-3 {
+  background: radial-gradient(
+    circle at 50% 50%,
+    var(--blob-3),
+    transparent 65%
+  );
+  top: 30%;
+  left: 45%;
+  width: 40vmax;
+  height: 40vmax;
+  animation: drift-c 38s ease-in-out infinite alternate;
+}
+
+/* Extremely subtle grain keeps large gradients from banding */
+.scene-grain {
+  position: absolute;
+  inset: 0;
+  opacity: 0.05;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+@keyframes drift-a {
+  from {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  to {
+    transform: translate3d(9vmax, 7vmax, 0) scale(1.15);
+  }
+}
+
+@keyframes drift-b {
+  from {
+    transform: translate3d(0, 0, 0) scale(1.1);
+  }
+  to {
+    transform: translate3d(-8vmax, -6vmax, 0) scale(0.95);
+  }
+}
+
+@keyframes drift-c {
+  from {
+    transform: translate3d(-4vmax, 3vmax, 0);
+  }
+  to {
+    transform: translate3d(5vmax, -5vmax, 0);
+  }
+}
+
+/* ============================================================
+   Liquid Glass primitives
+   ============================================================ */
+.glass {
+  position: relative;
+  background: var(--glass-fill);
+  backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  -webkit-backdrop-filter: blur(var(--glass-blur))
+    saturate(var(--glass-saturate));
+  border-radius: var(--radius-lg);
+  box-shadow:
+    inset 0 1px 0 var(--glass-specular),
+    inset 0 -1px 0 var(--glass-shade),
+    inset 1px 0 0 rgba(255, 255, 255, 0.12),
+    inset -1px 0 0 rgba(255, 255, 255, 0.08),
+    var(--glass-shadow);
+  border: 1px solid var(--glass-stroke);
+}
+
+/* Inner glass tiles: a lighter second layer of the same material */
+.glass-inner {
+  background: var(--glass-inner-fill);
+  border: 1px solid var(--glass-stroke);
+  border-radius: var(--radius-md);
+  box-shadow:
+    inset 0 1px 0 var(--glass-specular),
+    inset 0 -1px 0 var(--glass-shade);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+/* Spectral diffraction edge: a thin ring of prism light that
+   slowly travels around the pane. Implemented as a masked
+   conic gradient so only the 1.5px rim is tinted. */
+.diffract::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1.5px;
+  background: var(--spectra);
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  pointer-events: none;
+  animation: diffract-rotate 14s linear infinite;
+}
+
+/* A soft caustic bloom that follows the rim light */
+.diffract::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(
+    115deg,
+    transparent 30%,
+    rgba(255, 255, 255, 0.14) 46%,
+    rgba(255, 255, 255, 0.02) 54%,
+    transparent 70%
+  );
+  background-size: 260% 260%;
+  pointer-events: none;
+  animation: sheen-sweep 9s var(--animation-easing) infinite;
+}
+
+@keyframes diffract-rotate {
+  to {
+    --diffract-angle: 480deg;
+  }
+}
+
+@keyframes sheen-sweep {
+  0%,
+  55% {
+    background-position: 120% 0%;
+  }
+  85%,
+  100% {
+    background-position: -60% 100%;
+  }
 }
 
 /* === Visually Hidden Class === */
@@ -181,128 +457,197 @@ body {
   border: 0 !important;
 }
 
-/* === Main Container === */
+/* ============================================================
+   Layout
+   ============================================================ */
 .container {
+  position: relative;
+  z-index: var(--z-index-content);
   text-align: center;
   padding: var(--spacing-lg);
-  max-width: 800px;
+  padding-top: calc(var(--spacing-xl) + 3rem);
+  max-width: 760px;
   width: 100%;
-  animation: fadeIn var(--animation-duration-slow) var(--animation-easing);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+  animation: rise-in var(--animation-duration-slow) var(--animation-easing);
 }
 
-/* === Typography === */
+.hero-header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+}
+
+.eyebrow {
+  font-size: var(--font-size-small);
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--text-tertiary);
+}
+
 .title {
   font-size: var(--font-size-3xl);
-  margin-bottom: var(--spacing-lg);
-  text-shadow: 2px 2px 4px var(--text-shadow);
-  animation: fadeIn var(--animation-duration-slow) var(--animation-easing) 0.2s
-    both;
   font-weight: 700;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.03em;
+  color: var(--text-primary);
 }
 
-.timer {
-  font-size: var(--font-size-4xl);
-  font-weight: 800;
-  margin-bottom: var(--spacing-md);
-  text-shadow: 3px 3px 6px var(--text-shadow);
-  animation: fadeIn var(--animation-duration-slow) var(--animation-easing) 0.4s
-    both;
-  letter-spacing: -0.01em;
-  word-break: break-all;
-  hyphens: auto;
-}
-
-/* === Astronomical Panel === */
-.astro-panel-section {
-  margin-top: var(--spacing-lg);
-  animation: fadeIn var(--animation-duration-slow) var(--animation-easing) 1s
-    both;
-}
-
-.astro-panel {
-  background: var(--control-bg);
-  border: 1px solid var(--control-border);
-  border-radius: 12px;
-  padding: var(--spacing-md);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+/* === Hero card === */
+.hero-card {
+  padding: clamp(1.25rem, 3vw, 2.25rem);
   display: flex;
   flex-direction: column;
   gap: var(--spacing-md);
-  text-align: left;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  animation: rise-in var(--animation-duration-slow) var(--animation-easing)
+    0.12s both;
 }
 
-.astro-info-group {
+.breakdown {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: clamp(0.5rem, 1.5vw, 1rem);
+}
+
+.unit-tile {
+  padding: clamp(0.75rem, 2vw, 1.25rem) 0.25rem;
   display: flex;
-  justify-content: space-between;
-  gap: var(--spacing-md);
+  flex-direction: column;
+  align-items: center;
+  gap: 0.15rem;
+  min-width: 0;
 }
 
-.astro-info-item {
-  flex: 1;
-  min-width: 0; /* Prevents overflow issues with flex items */
+.unit-value {
+  font-size: var(--font-size-2xl);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-primary);
 }
 
-.astro-label {
-  font-weight: 600;
-  opacity: 0.8;
+.unit-label {
   font-size: var(--font-size-small);
-  display: block;
-  margin-bottom: var(--spacing-xs);
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-tertiary);
 }
 
-#moon-phase,
-#constellation,
-#sunrise-time,
-#sunset-time,
-#current-location {
-  font-size: var(--font-size-base);
+.timer {
+  font-size: var(--font-size-large);
   font-weight: 500;
-  display: block; /* Ensure each piece of info is on its own line if needed */
-  word-wrap: break-word; /* Prevent long text from breaking layout */
-}
-
-#sun-times-container span {
-  display: block; /* Stack sunrise and sunset times */
+  font-variant-numeric: tabular-nums;
+  color: var(--text-secondary);
+  letter-spacing: -0.01em;
+  overflow-wrap: break-word;
 }
 
 .days-until {
-  font-size: var(--font-size-large);
-  font-weight: 500;
-  text-align: center;
-  margin-top: var(--spacing-sm);
-  margin-bottom: var(--spacing-lg);
-  opacity: 0.85;
-  text-shadow: 1px 1px 2px var(--text-shadow);
-  animation: fadeIn var(--animation-duration-slow) var(--animation-easing) 0.5s
-    both;
+  align-self: center;
+  font-size: var(--font-size-base);
+  font-weight: 600;
+  color: var(--accent);
+  background: var(--accent-soft);
+  border-radius: var(--radius-pill);
+  padding: 0.4em 1.1em;
+  min-height: 1em;
+}
+
+.days-until:empty {
+  display: none;
+}
+
+/* === Message card === */
+.message-card {
+  padding: clamp(1rem, 2.5vw, 1.75rem);
+  animation: rise-in var(--animation-duration-slow) var(--animation-easing)
+    0.24s both;
 }
 
 .message {
   font-size: var(--font-size-xl);
-  margin-bottom: var(--spacing-lg);
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  color: var(--text-primary);
   opacity: 1;
   transition: opacity var(--animation-duration-slow) ease-in-out;
-  text-shadow: 1px 1px 2px var(--text-shadow);
-  animation: fadeIn var(--animation-duration-slow) var(--animation-easing) 0.6s
-    both;
   min-height: 2em;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.date {
-  font-size: var(--font-size-large);
-  opacity: 0.8;
-  text-shadow: 1px 1px 2px var(--text-shadow);
-  animation: fadeIn var(--animation-duration-slow) var(--animation-easing) 0.8s
-    both;
+/* === Footer === */
+.hero-footer {
+  animation: rise-in var(--animation-duration-slow) var(--animation-easing)
+    0.36s both;
 }
 
-/* === Hearts Animation === */
+.date {
+  font-size: var(--font-size-small);
+  color: var(--text-tertiary);
+  font-weight: 500;
+}
+
+/* ============================================================
+   Control bar
+   ============================================================ */
+.control-bar {
+  position: fixed;
+  top: max(var(--spacing-md), env(safe-area-inset-top));
+  right: max(var(--spacing-md), env(safe-area-inset-right));
+  z-index: var(--z-index-controls);
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 4px;
+  border-radius: var(--radius-pill);
+}
+
+.control-divider {
+  width: 1px;
+  height: 1.1em;
+  background: var(--glass-stroke);
+}
+
+.control-button {
+  display: flex;
+  align-items: center;
+  gap: 0.45em;
+  background: transparent;
+  border: none;
+  color: var(--text-primary);
+  padding: 0.5em 0.9em;
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  font-family: inherit;
+  font-size: var(--font-size-small);
+  font-weight: 600;
+  transition:
+    background var(--animation-duration-normal) var(--animation-easing),
+    transform var(--animation-duration-fast) var(--animation-easing);
+}
+
+.control-button:hover {
+  background: var(--glass-inner-fill);
+}
+
+.control-button:active {
+  transform: scale(0.96);
+}
+
+.control-icon {
+  font-size: 1em;
+  line-height: 1;
+  color: var(--accent);
+}
+
+/* ============================================================
+   Hearts
+   ============================================================ */
 .hearts-container {
   position: fixed;
   top: 0;
@@ -325,17 +670,21 @@ body {
   user-select: none;
   backface-visibility: hidden;
   transform: translateZ(0);
+  filter: blur(0.3px) drop-shadow(0 2px 8px rgba(255, 100, 150, 0.35));
+  opacity: 0.9;
 }
 
-/* === Animations === */
-@keyframes fadeIn {
+/* ============================================================
+   Animations
+   ============================================================ */
+@keyframes rise-in {
   from {
     opacity: 0;
-    transform: translateY(20px);
+    transform: translateY(18px) scale(0.985);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateY(0) scale(1);
   }
 }
 
@@ -359,80 +708,168 @@ body {
   }
 }
 
-/* === Accessibility Controls === */
-.accessibility-controls {
+/* ============================================================
+   Settings sheet
+   ============================================================ */
+.sheet-backdrop {
   position: fixed;
-  top: var(--spacing-md);
-  right: var(--spacing-md);
-  display: flex;
-  gap: var(--spacing-sm);
-  z-index: var(--z-index-controls);
+  inset: 0;
+  z-index: calc(var(--z-index-sheet) - 1);
+  background: rgba(10, 10, 25, 0.35);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  animation: fade-in var(--animation-duration-normal) ease-out;
 }
 
-.control-button {
-  background: var(--control-bg);
-  border: 1px solid var(--control-border);
-  color: var(--text-primary);
-  padding: var(--spacing-sm) var(--spacing-md);
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: var(--font-size-small);
-  font-weight: 500;
-  transition: all var(--animation-duration-normal) var(--animation-easing);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-}
-
-.control-button:hover {
-  background: rgba(255, 255, 255, 0.2);
-  transform: translateY(-1px);
-}
-
-.control-button:active {
-  transform: translateY(0);
-}
-
-/* === Loading Indicator === */
-.loading {
+.settings-sheet {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: var(--loading-bg);
+  left: 50%;
+  bottom: max(var(--spacing-lg), env(safe-area-inset-bottom));
+  transform: translateX(-50%);
+  z-index: var(--z-index-sheet);
+  width: min(420px, calc(100vw - 2 * var(--spacing-md)));
+  padding: var(--spacing-lg);
   display: flex;
   flex-direction: column;
+  gap: var(--spacing-sm);
+  text-align: left;
+  animation: sheet-up var(--animation-duration-normal) var(--animation-easing);
+}
+
+@keyframes sheet-up {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(24px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0) scale(1);
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.sheet-title {
+  font-size: var(--font-size-xl);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.sheet-subtitle {
+  font-size: var(--font-size-small);
+  color: var(--text-secondary);
+  margin-bottom: var(--spacing-sm);
+}
+
+.sheet-label {
+  font-size: var(--font-size-small);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-tertiary);
+}
+
+.sheet-input {
+  font-family: inherit;
+  font-size: var(--font-size-base);
+  color: var(--text-primary);
+  background: var(--glass-inner-fill);
+  border: 1px solid var(--glass-stroke);
+  border-radius: var(--radius-sm);
+  padding: 0.6em 0.9em;
+  width: 100%;
+}
+
+.sheet-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--spacing-sm);
+  margin-top: var(--spacing-sm);
+}
+
+.sheet-button {
+  font-family: inherit;
+  font-size: var(--font-size-base);
+  font-weight: 600;
+  border-radius: var(--radius-pill);
+  padding: 0.55em 1.4em;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition:
+    transform var(--animation-duration-fast) var(--animation-easing),
+    opacity var(--animation-duration-fast) ease;
+}
+
+.sheet-button:active {
+  transform: scale(0.97);
+}
+
+.sheet-button.primary {
+  background: var(--accent);
+  color: #fff;
+}
+
+.sheet-button.secondary {
+  background: transparent;
+  color: var(--text-primary);
+  border-color: var(--glass-stroke);
+}
+
+/* ============================================================
+   Loading indicator
+   ============================================================ */
+.loading {
+  position: fixed;
+  inset: 0;
+  background: var(--loading-bg);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  display: flex;
   justify-content: center;
   align-items: center;
   z-index: var(--z-index-loading);
   color: var(--text-primary);
-  gap: var(--spacing-md);
 }
 
 .loading.hidden {
   display: none;
 }
 
+.loading-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-md);
+  padding: var(--spacing-lg) var(--spacing-xl);
+  font-weight: 600;
+}
+
 .loading-spinner {
-  width: 40px;
-  height: 40px;
-  border: 3px solid rgba(255, 255, 255, 0.3);
-  border-top: 3px solid var(--text-primary);
+  width: 36px;
+  height: 36px;
+  border: 3px solid var(--glass-stroke);
+  border-top: 3px solid var(--accent);
   border-radius: 50%;
   animation: spin 1s linear infinite;
 }
 
-/* === Error Handling === */
+/* ============================================================
+   Error handling
+   ============================================================ */
 .error-message {
   position: fixed;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  background: var(--error-bg);
   color: var(--text-primary);
   padding: var(--spacing-lg);
-  border-radius: 12px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
   text-align: center;
   max-width: 400px;
   width: 90%;
@@ -442,16 +879,19 @@ body {
 .error-message h2 {
   margin-bottom: var(--spacing-md);
   font-size: var(--font-size-xl);
+  color: var(--accent);
 }
 
 .retry-button {
-  background: var(--text-primary);
-  color: var(--error-bg);
+  font-family: inherit;
+  background: var(--accent);
+  color: #fff;
   border: none;
   padding: var(--spacing-sm) var(--spacing-lg);
-  border-radius: 6px;
+  border-radius: var(--radius-pill);
   cursor: pointer;
   font-weight: 600;
+  font-size: var(--font-size-base);
   margin-top: var(--spacing-md);
   transition: opacity var(--animation-duration-normal) var(--animation-easing);
 }
@@ -460,55 +900,51 @@ body {
   opacity: 0.9;
 }
 
-/* === Responsive Design === */
+/* ============================================================
+   Responsive
+   ============================================================ */
 @media (max-width: 768px) {
-  .accessibility-controls {
-    top: var(--spacing-sm);
-    right: var(--spacing-sm);
+  .control-label {
+    display: none;
   }
 
   .control-button {
-    padding: var(--spacing-xs) var(--spacing-sm);
-    font-size: 0.75rem;
+    padding: 0.55em 0.75em;
+  }
+
+  .control-icon {
+    font-size: 1.15em;
   }
 }
 
 @media (max-width: 480px) {
   .container {
     padding: var(--spacing-md);
+    padding-top: calc(var(--spacing-xl) + 2rem);
+    gap: var(--spacing-md);
   }
 
-  .title {
-    margin-bottom: var(--spacing-md);
+  .breakdown {
+    grid-template-columns: repeat(2, 1fr);
   }
 
-  .timer {
-    line-height: 1.2;
-  }
-
-  .accessibility-controls {
-    flex-direction: column;
-    gap: var(--spacing-xs);
-  }
-
-  .astro-info-group {
-    flex-direction: column;
-    gap: var(--spacing-sm);
-  }
-
-  .astro-panel {
-    padding: var(--spacing-sm);
+  .hero-card,
+  .message-card {
+    border-radius: var(--radius-md);
   }
 }
 
-/* === Container Queries (Future Enhancement) === */
-
-/* === Print Styles === */
+/* ============================================================
+   Print
+   ============================================================ */
 @media print {
   .hearts-container,
-  .accessibility-controls,
+  .control-bar,
   .loading,
-  .error-message {
+  .error-message,
+  .scene,
+  .settings-sheet,
+  .sheet-backdrop {
     display: none !important;
   }
 
@@ -517,16 +953,27 @@ body {
     color: black !important;
   }
 
+  .glass,
+  .glass-inner {
+    background: white !important;
+    box-shadow: none !important;
+    border-color: black !important;
+  }
+
   .title,
   .timer,
   .message,
-  .date {
+  .date,
+  .unit-value,
+  .unit-label {
     color: black !important;
     text-shadow: none !important;
   }
 }
 
-/* === Animation States === */
+/* ============================================================
+   Animation states
+   ============================================================ */
 [data-animations='disabled'] .heart {
   display: none !important;
 }
@@ -535,9 +982,17 @@ body {
   animation: none !important;
 }
 
-/* === RTL Support === */
-[dir='rtl'] .accessibility-controls {
-  left: var(--spacing-md);
+[data-animations='disabled'] .scene-blob,
+[data-animations='disabled'] .diffract::before,
+[data-animations='disabled'] .diffract::after {
+  animation: none !important;
+}
+
+/* ============================================================
+   RTL support
+   ============================================================ */
+[dir='rtl'] .control-bar {
+  left: max(var(--spacing-md), env(safe-area-inset-left));
   right: auto;
 }
 
@@ -546,9 +1001,11 @@ body {
   right: 6px;
 }
 
-/* === Reduced Motion Alternative Animations === */
+/* ============================================================
+   Reduced-motion alternative entrance
+   ============================================================ */
 @media (prefers-reduced-motion: reduce) {
-  @keyframes fadeInReduced {
+  @keyframes fade-in-reduced {
     from {
       opacity: 0;
     }
@@ -558,11 +1015,9 @@ body {
   }
 
   .container,
-  .title,
-  .timer,
-  .days-until,
-  .message,
-  .date {
-    animation: fadeInReduced 0.1s ease-out !important;
+  .hero-card,
+  .message-card,
+  .hero-footer {
+    animation: fade-in-reduced 0.1s ease-out !important;
   }
 }

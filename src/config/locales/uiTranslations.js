@@ -16,15 +16,12 @@ export default {
     since: 'Since {date}',
     timerError: 'Timer error',
     failedToLoad: 'Failed to load timer',
-    astroMoon: 'Moon:',
-    astroStars: 'Stars:',
-    astroSun: 'Sun:',
-    astroLocation: 'Location:',
-    astroPhase: 'Phase',
-    astroSunrise: 'Sunrise:',
-    astroSunset: 'Sunset:',
-    astroDataNA: 'N/A',
-    astroDataUnavailable: 'Astronomical data unavailable.'
+    togetherFor: 'Together for',
+    totalSeconds: '{count} seconds together',
+    unitDays: 'days',
+    unitHours: 'hours',
+    unitMinutes: 'min',
+    unitSeconds: 'sec'
   },
   'es-ES': {
     loading: 'Cargando temporizador de amor...',
@@ -42,14 +39,11 @@ export default {
     since: 'Desde {date}',
     timerError: 'Error del temporizador',
     failedToLoad: 'Error al cargar el temporizador',
-    astroMoon: 'Luna:',
-    astroStars: 'Estrellas:',
-    astroSun: 'Sol:',
-    astroLocation: 'Ubicación:',
-    astroPhase: 'Fase',
-    astroSunrise: 'Amanecer:',
-    astroSunset: 'Atardecer:',
-    astroDataNA: 'N/D',
-    astroDataUnavailable: 'Datos astronómicos no disponibles.'
+    togetherFor: 'Juntos desde hace',
+    totalSeconds: '{count} segundos juntos',
+    unitDays: 'días',
+    unitHours: 'horas',
+    unitMinutes: 'min',
+    unitSeconds: 'seg'
   }
 };
