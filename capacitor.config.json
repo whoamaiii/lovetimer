@@ -1,0 +1,12 @@
+{
+  "appId": "com.lovetimer.app",
+  "appName": "Love Timer",
+  "webDir": "dist",
+  "backgroundColor": "#0b0b16",
+  "ios": {
+    "contentInset": "never",
+    "backgroundColor": "#0b0b16",
+    "preferredContentMode": "mobile",
+    "scrollEnabled": true
+  }
+}

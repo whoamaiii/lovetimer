@@ -12,6 +12,10 @@ dist
 dist-ssr
 *.local
 
+# Rasterized intermediates for iOS icon/splash generation
+# (regenerate with `npm run ios:assets` from the SVG sources)
+assets/*.png
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
