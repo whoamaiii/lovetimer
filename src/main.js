@@ -6,6 +6,7 @@ import confetti from 'canvas-confetti';
 import {
   START_DATE,
   START_DATE_STORAGE_KEY,
+  ORIGINAL_START_DATE_ISO,
   getMessages,
   getUIText,
   ANIMATION_CONFIG,
@@ -17,7 +18,7 @@ import {
   validateConfig,
   getConfigSummary
 } from './config/index.js';
-import { getTimeBreakdown } from './utils/timeBreakdown.js';
+import { getTimeBreakdown, getYearMonthDiff } from './utils/timeBreakdown.js';
 
 /**
  * Main Love Timer Application Class
@@ -56,6 +57,10 @@ export class LoveTimerApp {
     this.openSettings = this.openSettings.bind(this);
     this.closeSettings = this.closeSettings.bind(this);
     this.saveStartDate = this.saveStartDate.bind(this);
+    this.resetStartDate = this.resetStartDate.bind(this);
+    this.handlePointerLight = this.handlePointerLight.bind(this);
+    this.resetPointerLight = this.resetPointerLight.bind(this);
+    this.handleHeroTap = this.handleHeroTap.bind(this);
   }
 
   /**
@@ -188,7 +193,12 @@ export class LoveTimerApp {
       'settings-backdrop',
       'start-date-input',
       'save-date',
-      'cancel-settings'
+      'cancel-settings',
+      'reset-date',
+      'hero-card',
+      'time-summary',
+      'anniversary-progress',
+      'anniversary-progress-fill'
     ];
 
     optionalElements.forEach((id) => {
@@ -205,7 +215,8 @@ export class LoveTimerApp {
       'label-hours': 'unitHours',
       'label-minutes': 'unitMinutes',
       'label-seconds': 'unitSeconds',
-      'page-eyebrow': 'togetherFor'
+      'page-eyebrow': 'togetherFor',
+      'reset-date': 'resetDate'
     };
 
     Object.entries(labels).forEach(([id, key]) => {
@@ -213,6 +224,13 @@ export class LoveTimerApp {
         this.cachedElements[id].textContent = getUIText(key);
       }
     });
+
+    if (this.cachedElements['anniversary-progress']) {
+      this.cachedElements['anniversary-progress'].setAttribute(
+        'aria-label',
+        getUIText('nextAnniversaryProgress')
+      );
+    }
   }
 
   /**
@@ -300,6 +318,81 @@ export class LoveTimerApp {
         'click',
         this.saveStartDate
       );
+    }
+
+    if (this.cachedElements['reset-date']) {
+      this.cachedElements['reset-date'].addEventListener(
+        'click',
+        this.resetStartDate
+      );
+    }
+
+    // Liquid light on the hero card: the specular highlight follows the
+    // pointer and the pane tilts ever so slightly, like real glass
+    const heroCard = this.cachedElements['hero-card'];
+    if (heroCard && window.matchMedia?.('(hover: hover)').matches) {
+      heroCard.addEventListener('pointermove', this.handlePointerLight);
+      heroCard.addEventListener('pointerleave', this.resetPointerLight);
+    }
+
+    if (heroCard) {
+      heroCard.addEventListener('click', this.handleHeroTap);
+    }
+  }
+
+  /**
+   * Move the specular highlight to the pointer and tilt the pane slightly
+   */
+  handlePointerLight(event) {
+    if (!this.animationsEnabled) return;
+    if (this.reducedMotionQuery?.matches) return;
+
+    const card = this.cachedElements['hero-card'];
+    const rect = card.getBoundingClientRect();
+    const x = (event.clientX - rect.left) / rect.width;
+    const y = (event.clientY - rect.top) / rect.height;
+
+    card.style.setProperty('--pointer-x', `${(x * 100).toFixed(2)}%`);
+    card.style.setProperty('--pointer-y', `${(y * 100).toFixed(2)}%`);
+    card.style.setProperty('--pointer-opacity', '1');
+
+    const tiltX = ((0.5 - y) * 2.5).toFixed(2);
+    const tiltY = ((x - 0.5) * 2.5).toFixed(2);
+    card.style.transform = `perspective(1200px) rotateX(${tiltX}deg) rotateY(${tiltY}deg)`;
+  }
+
+  /**
+   * Let the glass settle back when the pointer leaves
+   */
+  resetPointerLight() {
+    const card = this.cachedElements['hero-card'];
+    if (!card) return;
+    card.style.setProperty('--pointer-opacity', '0');
+    card.style.transform = '';
+  }
+
+  /**
+   * A small burst of hearts where the hero card is tapped
+   */
+  handleHeroTap(event) {
+    if (!this.animationsEnabled) return;
+
+    try {
+      confetti({
+        particleCount: 18,
+        spread: 55,
+        startVelocity: 22,
+        gravity: 0.7,
+        scalar: 0.9,
+        ticks: 120,
+        origin: {
+          x: event.clientX / window.innerWidth,
+          y: event.clientY / window.innerHeight
+        },
+        colors: ['#ff6b9d', '#ff8fb3', '#e0447c', '#ffc2d4']
+      });
+    } catch (error) {
+      console.error('Heart burst error:', error);
     }
   }
 
@@ -428,6 +521,7 @@ export class LoveTimerApp {
     this.updateTimer();
     this.updateDaysRemaining();
     this.updateDateDisplay();
+    this.updateDurationSummary();
 
     // Set up intervals with performance consideration
     const updateInterval = this.isVisible
@@ -514,6 +608,8 @@ export class LoveTimerApp {
       const nextAnniv = this.getNextAnniversary(START_DATE);
       const daysLeft = this.getDaysLeft(nextAnniv);
 
+      this.updateAnniversaryProgress(nextAnniv);
+
       if (daysLeft === 0) {
         this.cachedElements.daysRemaining.textContent =
           getUIText('happyAnniversary');
@@ -538,6 +634,67 @@ export class LoveTimerApp {
     } catch (error) {
       console.error('Days remaining update error:', error);
       this.cachedElements.daysRemaining.textContent = '';
+    }
+  }
+
+  /**
+   * Fraction of the current anniversary year that has already passed
+   * @param {Date} nextAnniv
+   * @returns {number} value between 0 and 1
+   */
+  getAnniversaryProgress(nextAnniv) {
+    const previousAnniv = new Date(nextAnniv);
+    previousAnniv.setFullYear(previousAnniv.getFullYear() - 1);
+
+    const total = nextAnniv - previousAnniv;
+    const elapsed = Date.now() - previousAnniv;
+
+    if (total <= 0) return 0;
+    return Math.min(1, Math.max(0, elapsed / total));
+  }
+
+  /**
+   * Update the progress bar toward the next anniversary
+   */
+  updateAnniversaryProgress(nextAnniv) {
+    const track = this.cachedElements['anniversary-progress'];
+    const fill = this.cachedElements['anniversary-progress-fill'];
+    if (!track || !fill) return;
+
+    const percent = Math.round(this.getAnniversaryProgress(nextAnniv) * 100);
+    fill.style.width = `${percent}%`;
+    track.setAttribute('aria-valuenow', String(percent));
+  }
+
+  /**
+   * Update the friendly "that is X years, Y months of us" summary
+   */
+  updateDurationSummary() {
+    const summary = this.cachedElements['time-summary'];
+    if (!summary) return;
+
+    try {
+      const { years, months } = getYearMonthDiff(START_DATE, new Date());
+      const parts = [];
+
+      if (years > 0) {
+        parts.push(
+          `${years} ${getUIText(years === 1 ? 'unitYearOne' : 'unitYearOther')}`
+        );
+      }
+      if (months > 0) {
+        parts.push(
+          `${months} ${getUIText(months === 1 ? 'unitMonthOne' : 'unitMonthOther')}`
+        );
+      }
+
+      summary.textContent =
+        parts.length > 0
+          ? getUIText('durationSummary', { duration: parts.join(', ') })
+          : '';
+    } catch (error) {
+      console.error('Duration summary error:', error);
+      summary.textContent = '';
     }
   }
 
@@ -869,6 +1026,28 @@ export class LoveTimerApp {
     }
 
     // START_DATE is resolved at module load, so reload to apply it
+    try {
+      window.location.reload();
+    } catch {
+      this.closeSettings();
+    }
+  }
+
+  /**
+   * Restore the original anniversary date the app was made for
+   */
+  resetStartDate() {
+    try {
+      localStorage.removeItem(START_DATE_STORAGE_KEY);
+    } catch (error) {
+      console.warn('Could not reset start date:', error);
+    }
+
+    if (this.cachedElements['start-date-input']) {
+      this.cachedElements['start-date-input'].value =
+        ORIGINAL_START_DATE_ISO.slice(0, 10);
+    }
+
     try {
       window.location.reload();
     } catch {

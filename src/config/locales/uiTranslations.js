@@ -21,7 +21,14 @@ export default {
     unitDays: 'days',
     unitHours: 'hours',
     unitMinutes: 'min',
-    unitSeconds: 'sec'
+    unitSeconds: 'sec',
+    unitYearOne: 'year',
+    unitYearOther: 'years',
+    unitMonthOne: 'month',
+    unitMonthOther: 'months',
+    durationSummary: 'that is {duration} of us',
+    resetDate: 'Use our original date',
+    nextAnniversaryProgress: 'Progress toward the next anniversary'
   },
   'es-ES': {
     loading: 'Cargando temporizador de amor...',
@@ -44,6 +51,13 @@ export default {
     unitDays: 'días',
     unitHours: 'horas',
     unitMinutes: 'min',
-    unitSeconds: 'seg'
+    unitSeconds: 'seg',
+    unitYearOne: 'año',
+    unitYearOther: 'años',
+    unitMonthOne: 'mes',
+    unitMonthOther: 'meses',
+    durationSummary: 'eso es {duration} de nosotros',
+    resetDate: 'Usar nuestra fecha original',
+    nextAnniversaryProgress: 'Progreso hacia el próximo aniversario'
   }
 };

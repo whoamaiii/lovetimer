@@ -83,7 +83,7 @@
         <h2 id="timer-section-heading" class="visually-hidden">Love Timer Display</h2>
 
         <!-- Main glass hero card with diffraction edge -->
-        <div class="hero-card glass diffract">
+        <div class="hero-card glass diffract" id="hero-card">
           <div class="breakdown" role="group" aria-label="Time together, broken down">
             <div class="unit-tile glass-inner">
               <span class="unit-value" id="time-days">–</span>
@@ -113,12 +113,27 @@
             Loading...
           </div>
 
-          <p
-            id="daysRemaining"
-            class="days-until"
-            aria-live="polite"
-            aria-label="Days remaining until next anniversary"
-          ></p>
+          <p class="duration-summary" id="time-summary"></p>
+
+          <div class="anniversary-block">
+            <p
+              id="daysRemaining"
+              class="days-until"
+              aria-live="polite"
+              aria-label="Days remaining until next anniversary"
+            ></p>
+            <div
+              class="anniversary-progress"
+              id="anniversary-progress"
+              role="progressbar"
+              aria-label="Progress toward the next anniversary"
+              aria-valuemin="0"
+              aria-valuemax="100"
+              aria-valuenow="0"
+            >
+              <div class="anniversary-progress-fill" id="anniversary-progress-fill"></div>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -159,6 +174,7 @@
       <p class="sheet-subtitle">Pick the day your story began.</p>
       <label class="sheet-label" for="start-date-input">Start date</label>
       <input id="start-date-input" class="sheet-input" type="date" />
+      <button id="reset-date" class="sheet-reset" type="button">Use our original date</button>
       <div class="sheet-actions">
         <button id="cancel-settings" class="sheet-button secondary" type="button">Cancel</button>
         <button id="save-date" class="sheet-button primary" type="button">Save</button>

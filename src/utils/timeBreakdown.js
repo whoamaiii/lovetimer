@@ -16,3 +16,28 @@ export function getTimeBreakdown(totalSeconds) {
     seconds: clamped % 60
   };
 }
+
+/**
+ * Whole calendar years and remaining months between two dates.
+ * A month only counts once its day-of-month has been reached.
+ *
+ * @param {Date} from
+ * @param {Date} to
+ * @returns {{years: number, months: number}}
+ */
+export function getYearMonthDiff(from, to) {
+  let totalMonths =
+    (to.getFullYear() - from.getFullYear()) * 12 +
+    (to.getMonth() - from.getMonth());
+
+  if (to.getDate() < from.getDate()) {
+    totalMonths -= 1;
+  }
+
+  totalMonths = Math.max(0, totalMonths);
+
+  return {
+    years: Math.floor(totalMonths / 12),
+    months: totalMonths % 12
+  };
+}

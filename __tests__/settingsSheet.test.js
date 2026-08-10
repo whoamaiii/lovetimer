@@ -31,6 +31,7 @@ describe('settings sheet', () => {
       <div id="settings-backdrop" hidden></div>
       <div id="settings-sheet" hidden>
         <input id="start-date-input" type="date" />
+        <button id="reset-date"></button>
         <button id="save-date"></button>
         <button id="cancel-settings"></button>
       </div>
@@ -94,6 +95,22 @@ describe('settings sheet', () => {
     app.saveStartDate();
 
     expect(localStorage.getItem(START_DATE_STORAGE_KEY)).toBe('2020-06-15');
+
+    startSpy.mockRestore();
+  });
+
+  test('reset button clears the stored date so the original applies', () => {
+    const startSpy = jest
+      .spyOn(LoveTimerApp.prototype, 'startTimer')
+      .mockImplementation(() => {});
+
+    localStorage.setItem(START_DATE_STORAGE_KEY, '2021-01-01');
+
+    const app = initializeLoveTimer();
+    app.openSettings();
+    app.resetStartDate();
+
+    expect(localStorage.getItem(START_DATE_STORAGE_KEY)).toBeNull();
 
     startSpy.mockRestore();
   });

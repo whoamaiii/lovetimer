@@ -11,10 +11,20 @@ Built with Vite and vanilla JavaScript — no framework required.
 
 ## Features
 
+- **The original anniversary, preserved** — the app defaults to
+  June 4, 2024 at 07:39, the date recovered from this project's earliest
+  history. A "use our original date" reset in the settings sheet restores
+  it at any time, and a test guards the constant against regressions.
 - **Live time breakdown** — days, hours, minutes and seconds together,
-  plus the running total of seconds.
+  the running total of seconds, and a friendly "that is X years, Y months
+  of us" summary.
 - **Editable anniversary date** — pick your own date in a glass settings
   sheet; it is persisted in `localStorage`.
+- **Anniversary progress bar** — a gradient bar fills as the next
+  anniversary approaches.
+- **Liquid light interactions** — the hero card's specular highlight
+  follows your pointer and the pane tilts like real glass; tapping the
+  card bursts a handful of hearts.
 - **Anniversary countdown** — days remaining until the next anniversary,
   with a confetti celebration on the day itself.
 - **Million-second milestones** — confetti and a special message every

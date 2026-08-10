@@ -17,6 +17,13 @@
   inherits: false;
 }
 
+/* Registered so the pointer highlight can fade smoothly */
+@property --pointer-opacity {
+  syntax: '<number>';
+  initial-value: 0;
+  inherits: false;
+}
+
 /* === Design Tokens === */
 :root {
   color-scheme: light;
@@ -498,17 +505,49 @@ body {
   font-size: var(--font-size-3xl);
   font-weight: 700;
   letter-spacing: -0.03em;
+  background: linear-gradient(
+    100deg,
+    var(--text-primary) 20%,
+    var(--accent) 50%,
+    var(--text-primary) 80%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
   color: var(--text-primary);
 }
 
-/* === Hero card === */
+@media (prefers-contrast: more) {
+  .title {
+    background: none;
+    -webkit-text-fill-color: currentColor;
+  }
+}
+
+/* === Hero card ===
+   The entrance animation lives on the parent section so the card's own
+   transform stays free for the pointer tilt. */
+.timer-section {
+  animation: rise-in var(--animation-duration-slow) var(--animation-easing)
+    0.12s both;
+}
+
 .hero-card {
   padding: clamp(1.25rem, 3vw, 2.25rem);
   display: flex;
   flex-direction: column;
   gap: var(--spacing-md);
-  animation: rise-in var(--animation-duration-slow) var(--animation-easing)
-    0.12s both;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  /* Pointer-following specular highlight: liquid light on the glass */
+  background-image: radial-gradient(
+    circle 320px at var(--pointer-x, 50%) var(--pointer-y, 40%),
+    rgba(255, 255, 255, calc(0.16 * var(--pointer-opacity, 0))),
+    transparent 70%
+  );
+  transition:
+    transform 0.2s ease-out,
+    --pointer-opacity 0.5s ease;
 }
 
 .breakdown {
@@ -551,8 +590,27 @@ body {
   overflow-wrap: break-word;
 }
 
+.duration-summary {
+  font-size: var(--font-size-small);
+  color: var(--text-tertiary);
+  font-weight: 500;
+  margin-top: calc(-1 * var(--spacing-sm));
+}
+
+.duration-summary:empty {
+  display: none;
+}
+
+/* === Anniversary countdown + progress === */
+.anniversary-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-sm);
+  margin-top: var(--spacing-xs);
+}
+
 .days-until {
-  align-self: center;
   font-size: var(--font-size-base);
   font-weight: 600;
   color: var(--accent);
@@ -566,6 +624,23 @@ body {
   display: none;
 }
 
+.anniversary-progress {
+  width: min(320px, 80%);
+  height: 6px;
+  border-radius: var(--radius-pill);
+  background: var(--glass-inner-fill);
+  border: 1px solid var(--glass-stroke);
+  overflow: hidden;
+}
+
+.anniversary-progress-fill {
+  height: 100%;
+  width: 0%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--accent), #8b7cf6);
+  transition: width 0.6s var(--animation-easing);
+}
+
 /* === Message card === */
 .message-card {
   padding: clamp(1rem, 2.5vw, 1.75rem);
@@ -574,9 +649,12 @@ body {
 }
 
 .message {
+  /* New York-style serif for the romantic voice, SF everywhere else */
+  font-family: ui-serif, 'New York', Georgia, 'Times New Roman', serif;
+  font-style: italic;
   font-size: var(--font-size-xl);
-  font-weight: 500;
-  letter-spacing: -0.01em;
+  font-weight: 450;
+  letter-spacing: 0;
   color: var(--text-primary);
   opacity: 1;
   transition: opacity var(--animation-duration-slow) ease-in-out;
@@ -584,6 +662,19 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
+  quotes: '\201C' '\201D';
+}
+
+.message::before {
+  content: open-quote;
+  color: var(--accent);
+  margin-inline-end: 0.15em;
+}
+
+.message::after {
+  content: close-quote;
+  color: var(--accent);
+  margin-inline-start: 0.15em;
 }
 
 /* === Footer === */
@@ -791,6 +882,25 @@ body {
   border-radius: var(--radius-sm);
   padding: 0.6em 0.9em;
   width: 100%;
+}
+
+.sheet-reset {
+  align-self: flex-start;
+  background: none;
+  border: none;
+  color: var(--accent);
+  font-family: inherit;
+  font-size: var(--font-size-small);
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0.35em 0;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1px;
+}
+
+.sheet-reset:hover {
+  opacity: 0.8;
 }
 
 .sheet-actions {
@@ -1021,7 +1131,7 @@ body {
   }
 
   .container,
-  .hero-card,
+  .timer-section,
   .message-card,
   .hero-footer {
     animation: fade-in-reduced 0.1s ease-out !important;
