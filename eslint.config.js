@@ -25,5 +25,22 @@ export default [
       'arrow-body-style': 'off',
       'prefer-arrow-callback': 'off'
     }
+  },
+  {
+    files: ['__tests__/**/*.js', 'src/setupTests.js'],
+    languageOptions: {
+      globals: {
+        ...globals.jest,
+        ...globals.node
+      }
+    }
+  },
+  {
+    files: ['bin/**/*.mjs'],
+    languageOptions: {
+      globals: {
+        ...globals.node
+      }
+    }
   }
 ];

@@ -9,7 +9,7 @@
     "build": "vite build",
     "preview": "vite preview --port 3000 --host",
     "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
-    "lint": "eslint \"src/**/*.{js,jsx,ts,tsx}\"",
+    "lint": "eslint \"src/**/*.{js,jsx,ts,tsx}\" \"__tests__/**/*.js\" \"bin/**/*.mjs\"",
     "format": "prettier --write index.html \"src/**/*.{js,css,html,json}\"",
     "ios:sync": "npm run build && cap sync ios",
     "ios:open": "cap open ios",

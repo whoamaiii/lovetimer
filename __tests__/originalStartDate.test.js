@@ -1,8 +1,5 @@
 import { jest } from '@jest/globals';
-import {
-  START_DATE,
-  ORIGINAL_START_DATE_ISO
-} from '../src/config/index.js';
+import { START_DATE, ORIGINAL_START_DATE_ISO } from '../src/config/index.js';
 
 // Prevent CSS imports from breaking tests for ESM
 jest.unstable_mockModule('../src/style.css', () => ({}));
