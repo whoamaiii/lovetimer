@@ -94,3 +94,10 @@ This is a Vite-based application, primarily focused on timer functionality. It i
 -   For issues with `npm run start` or `npm run dev`, ensure the respective ports (3000, 5173) are not in use by other applications.
 
 This guide helps ensure consistency and quality when AI agents contribute to the Love Timer project.
+
+## Cursor Cloud specific instructions
+
+- This is a **pure frontend** Vite + vanilla-JS app. There is **no backend, database, or auth**. The `env`/`secrets` entries in `codex.json` (`DATABASE_URL`/MongoDB, `OPENAI_API_KEY`, `JWT_SECRET`) are unused placeholders — do not attempt to provision a database or those secrets to run/test the app.
+- Dependencies are refreshed automatically on startup via the update script (`npm ci`). Do **not** run `setup.sh` for setup: it does a redundant `npm install`, reinstalls dev deps, and generates a stale `.eslintrc.json` that the project does not use.
+- Linting uses the flat-config `eslint.config.js` (ESLint 8), not `.eslintrc.json`.
+- Standard commands (see `package.json`): `npm run dev` (dev server, port 5173), `npm run test` (Jest, jsdom), `npm run lint` (ESLint over `src/`), `npm run build` (Vite build), `npm run start` (build + `vite preview` on port 3000). Run `dev`/`start` in a persistent terminal since they are long-running.
